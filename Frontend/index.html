@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CropClimate AI - Smart Agriculture</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        /* Custom tweaks for a polished look */
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .hero-section {
+            padding: 80px 0;
+            background: linear-gradient(to right bottom, #f8fcf9, #e8f5e9);
+        }
+
+        .hero-img {
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            object-fit: cover;
+            height: 400px;
+            width: 100%;
+        }
+
+        .feature-card {
+            border: none;
+            border-radius: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            background-color: #e8f5e9;
+            color: #198754;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 15px;
+        }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="bi bi-tree-fill me-2"></i>CropClimate AI
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+                        <a class="btn btn-outline-light me-2" href="login.html">Login</a>
+                        <a class="btn btn-warning fw-bold text-dark" href="register.html">Sign Up</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1">
+
+        <section class="hero-section">
+            <div class="container">
+                <div class="row align-items-center flex-column-reverse flex-md-row">
+                    <div class="col-md-6 text-center text-md-start mt-4 mt-md-0">
+                        <span
+                            class="badge bg-success-subtle text-success mb-3 px-3 py-2 rounded-pill border border-success">
+                            Data-Driven Agriculture
+                        </span>
+                        <h1 class="display-4 fw-bolder text-dark lh-sm mb-3">
+                            Smart Crop Management Based on Climate
+                        </h1>
+                        <p class="lead text-muted mb-4">
+                            Remove the guesswork from farming. Get intelligent, data-backed recommendations for crop
+                            management using real-time temperature, rainfall, and humidity metrics.
+                        </p>
+                        <div class="d-flex gap-2 justify-content-center justify-content-md-start">
+                            <a href="register.html" class="btn btn-success btn-lg px-4 shadow-sm">
+                                Get Started <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                            <a href="#features" class="btn btn-outline-secondary btn-lg px-4">
+                                Learn More
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <img src="https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80"
+                            alt="Lush green agricultural field" class="img-fluid hero-img">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="container py-5 mt-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">Why Choose CropClimate AI?</h2>
+                <p class="text-muted">Powerful tools designed to maximize your yield and protect your soil.</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card feature-card h-100 p-3">
+                        <div class="card-body text-center">
+                            <div class="icon-circle">
+                                <i class="bi bi-thermometer-sun"></i>
+                            </div>
+                            <h4 class="fw-bold h5">Climate Analysis</h4>
+                            <p class="text-muted mb-0">
+                                Continuously monitor and analyze granular environmental conditions affecting your
+                                specific crop growth cycle.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card feature-card h-100 p-3">
+                        <div class="card-body text-center">
+                            <div class="icon-circle">
+                                <i class="bi bi-droplet-fill"></i>
+                            </div>
+                            <h4 class="fw-bold h5">Crop Recommendation</h4>
+                            <p class="text-muted mb-0">
+                                Input your soil type and weather data to let our system suggest the most profitable and
+                                suitable crops for your land.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card feature-card h-100 p-3">
+                        <div class="card-body text-center">
+                            <div class="icon-circle">
+                                <i class="bi bi-clipboard-data-fill"></i>
+                            </div>
+                            <h4 class="fw-bold h5">Management Tips</h4>
+                            <p class="text-muted mb-0">
+                                Receive actionable, practical advice and alerts tailored to your region to dramatically
+                                improve crop yield.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="predict" class="container py-5">
+            <div class="card shadow p-4 border-0">
+                <h3 class="fw-bold mb-4">Get Crop Recommendation</h3>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Temperature (°C)</label>
+                        <input type="number" id="temp" class="form-control" placeholder="e.g. 25">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Humidity (%)</label>
+                        <input type="number" id="hum" class="form-control" placeholder="e.g. 60">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Soil pH</label>
+                        <input type="number" id="ph" class="form-control" step="0.1" placeholder="e.g. 6.5">
+                    </div>
+                    <div class="col-12 mt-3">
+                        <button onclick="fetchRecommendation()" class="btn btn-success btn-lg">Get Recommendation</button>
+                    </div>
+                </div>
+                <div id="result-area" class="mt-4 p-3 bg-light rounded d-none">
+                    <h4 id="crop-result" class="text-success fw-bold"></h4>
+                </div>
+            </div>
+        </section>
+
+        <section id="history" class="container py-5">
+            <h3 class="fw-bold mb-4">Recent Climate Logs</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Temperature</th>
+                        <th>Humidity</th>
+                        <th>pH</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                </tbody>
+            </table>
+            <button onclick="loadHistory()" class="btn btn-sm btn-outline-success">Refresh Logs</button>
+        </section>
+    </main>
+
+    <footer class="bg-success text-white py-4 mt-auto">
+        <div class="container text-center">
+            <div class="mb-2">
+                <i class="bi bi-tree-fill fs-4"></i>
+            </div>
+            <p class="mb-0 fw-light">
+                © 2026 Crop Climate Recommendation System. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // 1. Function to get recommendation
+        async function fetchRecommendation() {
+            const data = {
+                temperature: parseFloat(document.getElementById('temp').value),
+                humidity: parseFloat(document.getElementById('hum').value),
+                soil_ph: parseFloat(document.getElementById('ph').value)
+            };
+
+            // Save and get recommendation
+            await fetch('http://127.0.0.1:5000/save-data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const response = await fetch('http://127.0.0.1:5000/recommend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            // Update UI
+            const resArea = document.getElementById('result-area');
+            resArea.classList.remove('d-none');
+            document.getElementById('crop-result').innerText = "Recommended Crop: " + result.crop;
+
+            // Refresh history table after saving new data
+            loadHistory();
+        }
+
+        // 2. Function to load history
+        async function loadHistory() {
+            const response = await fetch('http://127.0.0.1:5000/get-history');
+            const data = await response.json();
+            const tbody = document.getElementById('history-body');
+            tbody.innerHTML = '';
+
+            data.forEach(item => {
+                tbody.innerHTML += `<tr>
+                    <td>${item.temperature}</td>
+                    <td>${item.humidity}</td>
+                    <td>${item.soil_ph}</td>
+                </tr>`;
+            });
+        }
+
+        // Automatically load history when page opens
+        window.onload = loadHistory;
+    </script>
+</body>
+
+</html>

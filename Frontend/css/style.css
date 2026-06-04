@@ -1,0 +1,269 @@
+/* =========================================================================
+   1. GLOBAL VARIABLES & SYSTEM INITIALIZATION
+   ========================================================================= */
+:root {
+    --primary-green: #198754;
+    --primary-hover: #146c43;
+    --dark-green: #114b2e;
+    --accent-mint: #20c997;
+    --light-bg: #f8fcf9;
+    --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    --hover-shadow: 0 10px 25px rgba(25, 135, 84, 0.08);
+    --text-dark: #212529;
+    --text-muted: #6c757d;
+    --border-radius-sm: 8px;
+    --border-radius-lg: 15px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* =========================================================================
+   2. LANDING / HERO PAGES (index.html)
+   ========================================================================= */
+.hero {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    padding: 100px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.hero h1 {
+    color: var(--dark-green);
+    letter-spacing: -0.5px;
+}
+
+.hero p.lead {
+    color: #3b604a;
+}
+
+.hero-img {
+    max-height: 420px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    transition: transform 0.5s ease;
+}
+
+.hero-img:hover {
+    transform: scale(1.02);
+}
+
+.feature-card {
+    border: none !important;
+    border-radius: var(--border-radius-lg) !important;
+    box-shadow: var(--card-shadow);
+    background-color: #ffffff;
+    padding: 20px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--hover-shadow);
+}
+
+.feature-card h4 {
+    color: var(--dark-green);
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+/* =========================================================================
+   3. AUTHENTICATION SCREENS (login.html / register.html)
+   ========================================================================= */
+.auth-body {
+    background: linear-gradient(135deg, #f8fcf9 0%, #e8f5e9 100%);
+}
+
+.auth-card {
+    max-width: 420px;
+    width: 100%;
+    border: none !important;
+    border-radius: var(--border-radius-lg) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+    background-color: #ffffff;
+}
+
+.auth-card h3 {
+    font-weight: 700;
+    color: var(--dark-green);
+}
+
+/* Form Input Layout Styling Overrides */
+.form-control,
+.form-select {
+    padding: 12px 16px;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid #dee2e6;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.15);
+}
+
+/* =========================================================================
+   4. DASHBOARD PANELS & SIDEBAR LAYOUT FRAMEWORK
+   ========================================================================= */
+.wrapper {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 260px;
+    min-width: 260px;
+    background-color: var(--primary-green);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.04);
+    z-index: 100;
+}
+
+.sidebar a,
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-decoration: none;
+    padding: 12px 16px;
+    margin-bottom: 6px;
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.sidebar a:hover,
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.18) !important;
+    color: #ffffff !important;
+    transform: translateX(4px);
+}
+
+.sidebar hr {
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.content {
+    flex: 1;
+    background-color: var(--light-bg);
+    min-height: 100vh;
+    padding: 40px;
+    transition: all 0.3s ease;
+}
+
+/* =========================================================================
+   5. COMPONENT INTERFACES (recommendation.html / climate-input.html)
+   ========================================================================= */
+.stat-card {
+    border: none !important;
+    border-radius: var(--border-radius-lg) !important;
+    box-shadow: var(--card-shadow);
+    background-color: #ffffff;
+    padding: 24px;
+    height: 100%;
+}
+
+/* Primary Hero Result Card Banner */
+.result-card {
+    background: linear-gradient(135deg, var(--primary-green), var(--accent-mint)) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: var(--border-radius-lg) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.crop-icon-bg {
+    position: absolute;
+    right: -20px;
+    bottom: -30px;
+    font-size: 150px;
+    opacity: 0.12;
+    transform: rotate(-15deg);
+    pointer-events: none;
+}
+
+/* Custom Checklist Style for Farming Advice */
+.advice-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.advice-list li {
+    padding: 14px 18px;
+    background-color: #ffffff;
+    margin-bottom: 12px;
+    border-radius: var(--border-radius-sm);
+    border-left: 4px solid var(--primary-green);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.01);
+    display: flex;
+    align-items: flex-start;
+}
+
+.advice-list li i {
+    color: var(--primary-green);
+    margin-right: 14px;
+    font-size: 1.25rem;
+}
+
+/* =========================================================================
+   6. RESPONSIVE TRANSFORMS (MOBILE AND TABLETS)
+   ========================================================================= */
+@media (max-width: 992px) {
+    .hero {
+        padding: 60px 0;
+        text-center: center;
+    }
+
+    .hero-img {
+        margin-top: 40px;
+        max-height: 320px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* Responsive stacking for sidebar system layout */
+    .wrapper {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        padding-bottom: 15px;
+    }
+
+    .sidebar a,
+    .sidebar .nav-link {
+        margin-bottom: 2px;
+    }
+
+    .sidebar a:hover,
+    .sidebar .nav-link:hover {
+        transform: none;
+        /* Turn off sideways motion shift on mobile */
+    }
+
+    .content {
+        padding: 24px 16px;
+    }
+}
+
+footer {
+    margin-top: auto;
+}
