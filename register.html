@@ -125,75 +125,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        document.getElementById('registerForm').addEventListener('submit', async function (e) {
-            e.preventDefault(); // Stop standard page reload
-
-            // Get Input values
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            // Get UI alert elements
-            const errorBox = document.getElementById('errorMessage');
-            const successBox = document.getElementById('successMessage');
-            const submitBtn = document.getElementById('submitBtn');
-
-            // Reset UI components
-            errorBox.classList.add('d-none');
-            successBox.classList.add('d-none');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Creating account...';
-
-            try {
-                // Post request matching the exact keys required by your Flask endpoint
-                const response = await fetch('https://crop-climate-recommendation-system.onrender.com/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        email: email,
-                        password: password
-                    })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Success (Status 200)
-                    successBox.innerText = data.message || "Registration successful! Redirecting...";
-                    successBox.classList.remove('d-none');
-
-                    // Clear inputs upon completion
-                    document.getElementById('registerForm').reset();
-
-                    // Smooth transition to login page after 2 seconds
-                    setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 2000);
-
-                } else {
-                    // Operational error from backend (Status 400 - e.g., User already exists)
-                    errorBox.innerText = data.message || "Registration failed.";
-                    errorBox.classList.remove('d-none');
-
-                    // Restore button state
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="bi bi-person-plus me-2"></i> Register Account';
-                }
-            } catch (error) {
-                // Connection/Server offline errors
-                errorBox.innerText = "Cannot connect to server. Is your Flask app running?";
-                errorBox.classList.remove('d-none');
-
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="bi bi-person-plus me-2"></i> Register Account';
-            }
-        });
-    </script>
+    <script src="js/script.js"></script>
 </body>
 
 </html>
