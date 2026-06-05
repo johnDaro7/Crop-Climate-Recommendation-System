@@ -2,18 +2,22 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
+import certifi
 import os
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:56652", "https://johndaro7.github.io"])
 
-client = MongoClient('mongodb+srv://JOHNDARO:exmartial2003@cluster0.5nwpjbf.mongodb.net/?appName=Cluster0')
+client = MongoClient(
+    'mongodb+srv://JOHNDARO:exmartial2003@cluster0.5nwpjbf.mongodb.net/?appName=Cluster0',
+    tlsCAFile=certifi.where()
+)
 db = client['crop_recommendation_db']
 climate_collection = db['climate_data']
 users_collection = db['users']
 
 
-# ── HEALTH CHECK (stops Render 404 on HEAD /) ─────────────────────────────────
+# ── HEALTH CHECK ──────────────────────────────────────────────────────────────
 
 @app.route('/', methods=['GET', 'HEAD'])
 def health():
@@ -35,16 +39,13 @@ def register():
 
         if not name or not email or not password:
             return jsonify({"message": "Name, email and password are required."}), 400
-
         if len(password) < 6:
             return jsonify({"message": "Password must be at least 6 characters."}), 400
-
         if users_collection.find_one({"email": email}):
             return jsonify({"message": "An account with this email already exists."}), 409
 
         hashed_pw = generate_password_hash(password)
         result = users_collection.insert_one({"name": name, "email": email, "password": hashed_pw})
-
         return jsonify({"message": "Account registered successfully!", "user_id": str(result.inserted_id)}), 201
 
     except Exception as e:
