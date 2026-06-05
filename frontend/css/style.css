@@ -226,7 +226,7 @@ body {
 @media (max-width: 992px) {
     .hero {
         padding: 60px 0;
-        text-center: center;
+        text-align: center;
     }
 
     .hero-img {
