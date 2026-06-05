@@ -1,12 +1,14 @@
 /**
  * CropClimate AI - Core Client Application Script
  * Handlers for authentication, climate data tracking, and dynamic recommendations.
+ * Enhanced with Render Free Tier spin-up UX alerts.
  */
 
 document.addEventListener("DOMContentLoaded", function () {
     
-    // Global Constants / Base API Configuration URL
-    const API_BASE_URL = "http://127.0.0.1:5000";
+    // ⚠️ CRITICAL: Replace this URL with your actual live Render Web Service URL!
+    // Example: "https://crop-climate-backend.onrender.com"
+    const API_BASE_URL = "https://crop-climate-recommendation-system.onrender.com";
 
     /* =========================================================================
        1. REGISTER FORM HANDLER
@@ -16,7 +18,6 @@ document.addEventListener("DOMContentLoaded", function () {
         registerForm.addEventListener("submit", async function (e) {
             e.preventDefault();
 
-            // Select inputs safely using their specific ID attributes
             const nameInput = document.getElementById("name") || registerForm.querySelector("input[placeholder*='name']");
             const emailInput = document.getElementById("email") || registerForm.querySelector("input[type='email']");
             const passwordInput = document.getElementById("password") || registerForm.querySelector("input[type='password']");
@@ -25,19 +26,17 @@ document.addEventListener("DOMContentLoaded", function () {
             const successBox = document.getElementById("successMessage");
             const submitBtn = registerForm.querySelector("button[type='submit']") || registerForm.querySelector("button");
 
-            // Cache data values
             const name = nameInput.value.trim();
             const email = emailInput.value.trim();
             const password = passwordInput.value;
 
-            // Reset UI feedback states
             if (errorBox) errorBox.classList.add("d-none");
             if (successBox) successBox.classList.add("d-none");
             
-            // Set dynamic loading state
+            // 🔄 UPDATED: Added a friendly cold-start warning to the loading state
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing Registration...';
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Waking up cloud server... (May take ~60s if idle) ⏳';
             }
 
             try {
@@ -63,7 +62,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             } catch (error) {
                 if (errorBox) {
-                    errorBox.innerText = error.message;
+                    // 🔄 UPDATED: Catches connection errors caused by server-sleep delays
+                    if (error.name === "TypeError" || error.message.includes("fetch")) {
+                        errorBox.innerText = "Cannot connect to server right now. The free cloud hosting server is spinning up. Please wait 1 minute and click register again!";
+                    } else {
+                        errorBox.innerText = error.message;
+                    }
                     errorBox.classList.remove("d-none");
                 } else {
                     alert(error.message);
@@ -94,9 +98,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const password = passwordInput.value;
 
             if (errorBox) errorBox.classList.add("d-none");
+            
+            // 🔄 UPDATED: Added a friendly cold-start warning to the loading state
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Verifying...';
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Waking up cloud server... (May take ~60s if idle) ⏳';
             }
 
             try {
@@ -109,7 +115,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await response.json();
 
                 if (response.ok && data.user_id) {
-                    // Cache the user context safely for saving structural climate data later
                     localStorage.setItem("user_id", data.user_id);
                     window.location.href = "dashboard.html";
                 } else {
@@ -117,7 +122,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             } catch (error) {
                 if (errorBox) {
-                    errorBox.innerText = error.message;
+                    // 🔄 UPDATED: Gracefully tells user the server is sleeping instead of showing an outright failure
+                    if (error.name === "TypeError" || error.message.includes("fetch")) {
+                        errorBox.innerText = "Cannot connect to server. The free cloud server is still waking up. Please give it a few seconds and try logging in again!";
+                    } else {
+                        errorBox.innerText = error.message;
+                    }
                     errorBox.classList.remove("d-none");
                 } else {
                     alert(error.message);
@@ -138,7 +148,6 @@ document.addEventListener("DOMContentLoaded", function () {
         climateForm.addEventListener("submit", async function (e) {
             e.preventDefault();
 
-            // Explicit queries safely bound to type metrics or clear labels
             const temperatureInput = climateForm.querySelector("input[placeholder*='30']") || climateForm.querySelectorAll("input[type='number']")[0];
             const humidityInput = climateForm.querySelector("input[placeholder*='75']") || climateForm.querySelectorAll("input[type='number']")[1];
             const rainfallInput = climateForm.querySelector("input[placeholder*='150']") || climateForm.querySelectorAll("input[type='number']")[2];
@@ -151,17 +160,16 @@ document.addEventListener("DOMContentLoaded", function () {
             const soil = soilSelect.value;
             const userId = localStorage.getItem("user_id");
 
-            // Build payload for recommendations calculation engine
             const climateData = { temperature, humidity, rainfall, soil };
             localStorage.setItem("climateData", JSON.stringify(climateData));
 
+            // 🔄 UPDATED: Informative text for database operations
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Calculating Best Yield Metrics...';
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Saving data to cloud database...';
             }
 
             try {
-                // Submit record asynchronously to MongoDB via Flask Endpoint
                 const response = await fetch(`${API_BASE_URL}/climate`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -170,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         humidity: humidity,
                         rainfall: rainfall,
                         soil: soil,
-                        user_id: userId || "anonymous" // Fallback safety layer
+                        user_id: userId || "anonymous"
                     })
                 });
 
@@ -178,7 +186,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.warn("Backend was unable to persist data record, continuing localized generation.");
                 }
                 
-                // Proceed smoothly directly to view recommendations report page
                 window.location.href = "recommendation.html";
 
             } catch (error) {
@@ -209,7 +216,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const rain = parseFloat(data.rainfall) || 0;
             const hum = parseFloat(data.humidity) || 0;
 
-            // Algorithmic rules for evaluation
             if (rain > 150 && hum > 70) {
                 crop = "Rice";
                 score = 92;
@@ -228,14 +234,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 reason = `Moderate rainfall and sustainable warm conditions (${temp}°C) safely support robust Maize development cycles across your land layout.`;
             }
 
-            // Target updated modern UI elements dynamically
             const cropTitleEl = document.getElementById("cropName");
             const cropIconEl = document.querySelector(".crop-icon-bg");
             const descEl = document.querySelector(".lead");
             const scoreDisplayEl = document.querySelector(".stat-card .text-success");
             const progressBarEl = document.querySelector(".progress-bar");
             
-            // Handle secondary indicators systematically
             const statCards = document.querySelectorAll(".stat-card");
 
             if (cropTitleEl) cropTitleEl.innerText = crop;
@@ -251,15 +255,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 progressBarEl.setAttribute("aria-valuenow", score);
             }
 
-            // Map updated status tags into custom metrics layout
             if (statCards.length >= 3) {
-                // Update Risk element card 
                 const riskHeading = statCards[1].querySelector("h3");
                 if (riskHeading) {
                     riskHeading.innerText = risk;
                     riskHeading.className = `mb-0 fw-bold ${riskClass}`;
                 }
-                // Update Environment Match text element card
                 const matchHeading = statCards[2].querySelector("h3");
                 if (matchHeading) matchHeading.innerText = matchText;
             }
