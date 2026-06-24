@@ -3,6 +3,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 import certifi
+import ssl
 import os
 
 app = Flask(__name__)
@@ -14,13 +15,28 @@ CORS(app,
      ],
      supports_credentials=True)
 
-client = MongoClient(
-    'mongodb+srv://JOHNDARO:exmartial2003@cluster0.5nwpjbf.mongodb.net/?appName=Cluster0',
-    tlsCAFile=certifi.where()
+MONGO_URI = os.environ.get(
+    "MONGO_URI",
+    "mongodb+srv://JOHNDARO:exmartial2003@cluster0.5nwpjbf.mongodb.net/?appName=Cluster0"
 )
-db = client['crop_recommendation_db']
+
+def get_db():
+    """Create a MongoClient with robust TLS settings for Render's environment."""
+    client = MongoClient(
+        MONGO_URI,
+        tls=True,
+        tlsCAFile=certifi.where(),
+        tlsAllowInvalidCertificates=False,
+        serverSelectionTimeoutMS=30000,
+        socketTimeoutMS=20000,
+        connectTimeoutMS=20000,
+        retryWrites=True,
+    )
+    return client['crop_recommendation_db']
+
+db = get_db()
 climate_collection = db['climate_data']
-users_collection = db['users']
+users_collection   = db['users']
 
 
 # ── HEALTH CHECK ──────────────────────────────────────────────────────────────
