@@ -1,294 +1,1291 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CropClimate AI - Smart Agriculture</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CropSense — Crop & Climate Intelligence</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ═══ DESIGN TOKENS ═══════════════════════════════════════════════════════════ */
+:root{
+  --forest:#1A3C2B; --leaf:#2E7D45; --sprout:#52A96A; --mist:#A8D5B5;
+  --cream:#F7F3ED; --straw:#E8DFC8; --sun:#E8A020; --sky:#4A90C4;
+  --danger:#C0392B; --white:#FFFFFF; --text:#1C1C1C; --muted:#6B7A6D;
+  --border:#D4DACE; --page-bg:#F2F5F0; --sidebar-w:240px;
+  --radius:12px; --shadow:0 2px 12px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.14);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--page-bg);color:var(--text);min-height:100vh}
+button{cursor:pointer;font-family:inherit}
+input,select,textarea{font-family:inherit}
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+/* ═══ LANDING PAGE ════════════════════════════════════════════════════════════ */
+#landing{display:block}
+.land-nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  padding:0 5%;height:68px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(26,60,43,0.96);backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.land-nav .logo{display:flex;align-items:center;gap:0.6rem;color:#fff;font-size:1.15rem;font-weight:800;letter-spacing:-0.02em}
+.land-nav .logo span{font-size:1.5rem}
+.land-nav-links{display:flex;align-items:center;gap:0.25rem}
+.land-nav-links a{color:rgba(255,255,255,0.7);font-size:0.87rem;padding:0.45rem 0.9rem;border-radius:6px;transition:all 0.15s;text-decoration:none}
+.land-nav-links a:hover{color:#fff;background:rgba(255,255,255,0.08)}
+.btn-nav-cta{background:linear-gradient(135deg,var(--leaf),var(--sprout));color:#fff!important;font-weight:700;padding:0.5rem 1.25rem!important;border-radius:7px!important}
+.btn-nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(46,125,69,0.4)}
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+/* ─ HERO ─────────────────────────────────────────────────────────────────── */
+.hero{
+  min-height:100vh;
+  background:linear-gradient(160deg,#0C2318 0%,#1A3C2B 40%,#2E7D45 80%,#52A96A 100%);
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:7rem 1.5rem 4rem;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero-float{position:absolute;font-size:8rem;opacity:0.06;pointer-events:none;animation:float 8s ease-in-out infinite}
+.hero-float:nth-child(1){top:10%;left:5%;animation-delay:0s}
+.hero-float:nth-child(2){top:20%;right:8%;animation-delay:2s;font-size:5rem}
+.hero-float:nth-child(3){bottom:15%;left:10%;animation-delay:4s;font-size:6rem}
+.hero-float:nth-child(4){bottom:25%;right:5%;animation-delay:1s;font-size:4rem}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-20px) rotate(5deg)}}
+.hero-content{position:relative;z-index:1;max-width:780px;margin:0 auto}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);
+  color:var(--mist);font-size:0.8rem;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+  padding:0.4rem 1rem;border-radius:20px;margin-bottom:1.5rem;
+}
+.hero h1{
+  font-size:clamp(2.4rem,6vw,4rem);font-weight:900;color:#fff;
+  letter-spacing:-0.04em;line-height:1.1;margin-bottom:1.25rem;
+}
+.hero h1 em{font-style:normal;color:var(--mist)}
+.hero p{font-size:1.1rem;color:rgba(255,255,255,0.75);max-width:540px;margin:0 auto 2.5rem;line-height:1.7}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn-hero-primary{
+  padding:0.9rem 2.2rem;background:#fff;color:var(--forest);
+  border:none;border-radius:10px;font-size:1rem;font-weight:800;
+  transition:all 0.2s;
+}
+.btn-hero-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+.btn-hero-secondary{
+  padding:0.9rem 2rem;background:rgba(255,255,255,0.12);color:#fff;
+  border:1px solid rgba(255,255,255,0.3);border-radius:10px;
+  font-size:1rem;font-weight:600;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:0.4rem;
+}
+.btn-hero-secondary:hover{background:rgba(255,255,255,0.2)}
+.hero-stats{
+  display:flex;gap:3rem;justify-content:center;flex-wrap:wrap;
+  margin-top:3.5rem;padding-top:3rem;
+  border-top:1px solid rgba(255,255,255,0.12);
+}
+.hero-stat .val{font-size:2rem;font-weight:900;color:#fff}
+.hero-stat .lbl{font-size:0.78rem;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:0.07em;margin-top:0.2rem}
 
-    <link rel="stylesheet" href="css/style.css">
+/* ─ FEATURES SECTION ──────────────────────────────────────────────────────── */
+.land-section{padding:5rem 5%;max-width:1200px;margin:0 auto}
+.land-section-header{text-align:center;margin-bottom:3.5rem}
+.section-eyebrow{font-size:0.78rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--leaf);margin-bottom:0.75rem}
+.land-section-header h2{font-size:clamp(1.75rem,3.5vw,2.5rem);font-weight:900;color:var(--forest);letter-spacing:-0.03em}
+.land-section-header p{font-size:1rem;color:var(--muted);max-width:540px;margin:0.75rem auto 0;line-height:1.7}
 
-    <style>
-        /* Custom tweaks for a polished look */
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
+.feature-card{
+  background:#fff;border-radius:var(--radius);padding:2rem;
+  box-shadow:var(--shadow);border:1px solid var(--border);
+  transition:transform 0.2s,box-shadow 0.2s;
+}
+.feature-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.feature-icon{
+  width:52px;height:52px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(46,125,69,0.12),rgba(82,169,106,0.06));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;margin-bottom:1.25rem;
+}
+.feature-card h3{font-size:1.05rem;font-weight:800;color:var(--forest);margin-bottom:0.5rem}
+.feature-card p{font-size:0.87rem;color:var(--muted);line-height:1.7}
 
-        .hero-section {
-            padding: 80px 0;
-            background: linear-gradient(to right bottom, #f8fcf9, #e8f5e9);
-        }
+/* ─ HOW IT WORKS ──────────────────────────────────────────────────────────── */
+.how-section{background:linear-gradient(135deg,var(--forest),#0F2419);padding:5rem 5%}
+.how-inner{max-width:1100px;margin:0 auto}
+.how-inner .land-section-header h2{color:#fff}
+.how-inner .land-section-header p{color:rgba(255,255,255,0.65)}
+.how-inner .section-eyebrow{color:var(--mist)}
+.steps-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;margin-top:3rem}
+.how-step{text-align:center;color:#fff}
+.how-step .step-num{
+  width:54px;height:54px;border-radius:50%;
+  background:linear-gradient(135deg,var(--leaf),var(--sprout));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.25rem;font-weight:900;color:#fff;
+  margin:0 auto 1rem;box-shadow:0 4px 16px rgba(46,125,69,0.4);
+}
+.how-step h3{font-size:0.97rem;font-weight:700;margin-bottom:0.4rem}
+.how-step p{font-size:0.83rem;color:rgba(255,255,255,0.6);line-height:1.6}
 
-        .hero-img {
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            object-fit: cover;
-            height: 400px;
-            width: 100%;
-        }
+/* ─ CROP SHOWCASE ─────────────────────────────────────────────────────────── */
+.crops-section{background:var(--straw);padding:5rem 5%}
+.crops-inner{max-width:1100px;margin:0 auto}
+.crops-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;margin-top:3rem}
+.crop-card{
+  background:#fff;border-radius:var(--radius);padding:1.5rem;
+  text-align:center;box-shadow:var(--shadow);
+  transition:transform 0.2s;
+}
+.crop-card:hover{transform:translateY(-3px)}
+.crop-card .cce{font-size:2.75rem;margin-bottom:0.75rem;display:block}
+.crop-card h3{font-size:0.97rem;font-weight:800;color:var(--forest);margin-bottom:0.4rem}
+.crop-card .cr{font-size:0.75rem;color:var(--muted);line-height:1.5}
+.crop-tag{display:inline-block;padding:0.2rem 0.7rem;border-radius:12px;font-size:0.7rem;font-weight:700;margin-top:0.6rem}
+.ct-warm{background:#FFF3E0;color:#E65100}
+.ct-hot{background:#FCE4EC;color:#C62828}
+.ct-cool{background:#E3F2FD;color:#1565C0}
+.ct-wet{background:#E8F5E9;color:var(--forest)}
 
-        .feature-card {
-            border: none;
-            border-radius: 15px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            height: 100%;
-        }
+/* ─ TESTIMONIAL / CTA ─────────────────────────────────────────────────────── */
+.cta-section{
+  padding:6rem 5%;text-align:center;
+  background:linear-gradient(135deg,#F7F3ED,#E8DFC8);
+}
+.cta-inner{max-width:600px;margin:0 auto}
+.cta-section h2{font-size:clamp(1.75rem,3vw,2.4rem);font-weight:900;color:var(--forest);letter-spacing:-0.03em;margin-bottom:1rem}
+.cta-section p{font-size:1rem;color:var(--muted);line-height:1.7;margin-bottom:2rem}
+.btn-cta-big{
+  display:inline-block;padding:1rem 2.75rem;
+  background:linear-gradient(135deg,var(--leaf),var(--sprout));
+  color:#fff;border:none;border-radius:12px;font-size:1.05rem;font-weight:800;
+  transition:all 0.2s;cursor:pointer;
+}
+.btn-cta-big:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(46,125,69,0.4)}
 
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
+/* ─ FOOTER ────────────────────────────────────────────────────────────────── */
+.land-footer{
+  background:#0C2318;padding:2.5rem 5%;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;
+}
+.land-footer .logo{color:#fff;font-weight:800;font-size:1rem;display:flex;align-items:center;gap:0.5rem}
+.land-footer p{color:rgba(255,255,255,0.35);font-size:0.8rem}
 
-        .icon-circle {
-            width: 60px;
-            height: 60px;
-            background-color: #e8f5e9;
-            color: #198754;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin: 0 auto 15px;
-        }
-    </style>
+/* ═══ AUTH ════════════════════════════════════════════════════════════════════ */
+#auth-screen{
+  display:none;min-height:100vh;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--forest),var(--leaf) 50%,var(--sprout));
+  padding:1.5rem;
+}
+.auth-card{background:#fff;border-radius:20px;box-shadow:var(--shadow-lg);width:100%;max-width:420px;overflow:hidden}
+.auth-header{background:linear-gradient(135deg,var(--forest),var(--leaf));padding:2rem 2rem 1.5rem;text-align:center;color:#fff}
+.auth-logo{font-size:3rem;margin-bottom:0.5rem;display:block}
+.auth-header h1{font-size:1.6rem;font-weight:700;letter-spacing:-0.03em}
+.auth-header p{font-size:0.85rem;opacity:0.8;margin-top:0.3rem}
+.auth-tabs{display:flex;background:var(--straw);border-bottom:1px solid var(--border)}
+.auth-tab{flex:1;padding:0.85rem;border:none;background:none;font-size:0.9rem;font-weight:600;color:var(--muted);transition:all 0.2s;cursor:pointer}
+.auth-tab.active{background:#fff;color:var(--leaf);border-bottom:2px solid var(--leaf)}
+.auth-body{padding:1.75rem 2rem 2rem}
+.auth-panel{display:none}.auth-panel.active{display:block}
+.form-group{margin-bottom:1.1rem}
+.form-group label{display:block;font-size:0.82rem;font-weight:600;color:var(--forest);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.04em}
+.form-group input{width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.95rem;background:var(--cream);outline:none;transition:border-color 0.2s,box-shadow 0.2s}
+.form-group input:focus{border-color:var(--leaf);box-shadow:0 0 0 3px rgba(46,125,69,0.12);background:#fff}
+.btn-primary{width:100%;padding:0.85rem;background:linear-gradient(135deg,var(--leaf),var(--sprout));border:none;border-radius:8px;color:#fff;font-size:1rem;font-weight:700;margin-top:0.5rem;transition:all 0.15s}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(46,125,69,0.35)}
+.btn-primary:disabled{opacity:0.6;pointer-events:none}
+.auth-msg{text-align:center;font-size:0.87rem;padding:0.6rem 0.8rem;border-radius:6px;margin-top:1rem;display:none}
+.auth-msg.error{background:#FDECEA;color:var(--danger);display:block}
+.auth-msg.success{background:#E8F5E9;color:var(--forest);display:block}
+.back-to-land{text-align:center;margin-top:1rem;font-size:0.82rem}
+.back-to-land a{color:var(--leaf);font-weight:600;cursor:pointer}
+
+/* ═══ APP SHELL ═══════════════════════════════════════════════════════════════ */
+#app-shell{display:none;min-height:100vh}
+#app-shell.visible{display:flex}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:99}
+.sidebar{
+  width:var(--sidebar-w);
+  background:linear-gradient(180deg,var(--forest) 0%,#0F2419 100%);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto;transition:transform 0.3s;
+}
+.sidebar-brand{padding:1.5rem 1.25rem 1rem;border-bottom:1px solid rgba(255,255,255,0.08)}
+.sidebar-brand .bi{font-size:1.8rem}
+.sidebar-brand h2{color:#fff;font-size:1.15rem;font-weight:800;letter-spacing:-0.02em;margin-top:0.3rem}
+.sidebar-brand p{color:var(--mist);font-size:0.72rem;opacity:0.7}
+.sidebar-user{padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.75rem}
+.user-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--sprout),var(--sun));display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:1rem;flex-shrink:0}
+.user-info .user-name{color:#fff;font-size:0.87rem;font-weight:600}
+.user-info .user-role{color:var(--mist);font-size:0.72rem;opacity:0.7}
+.nav-section{padding:1rem 0.75rem 0.5rem}
+.nav-label{color:var(--mist);font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.5;padding:0 0.5rem 0.5rem}
+.nav-item{display:flex;align-items:center;gap:0.75rem;padding:0.7rem 0.85rem;border-radius:8px;color:rgba(255,255,255,0.65);font-size:0.88rem;font-weight:500;border:none;background:none;width:100%;text-align:left;cursor:pointer;transition:all 0.15s;margin-bottom:2px}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:#fff}
+.nav-item.active{background:rgba(255,255,255,0.12);color:#fff;font-weight:600}
+.nav-icon{font-size:1.15rem;width:22px;text-align:center}
+.nav-badge{margin-left:auto;background:var(--sun);color:#2D1B0E;font-size:0.68rem;font-weight:800;padding:1px 7px;border-radius:20px}
+.sidebar-footer{margin-top:auto;padding:1rem 0.75rem;border-top:1px solid rgba(255,255,255,0.08)}
+.btn-logout{display:flex;align-items:center;gap:0.6rem;padding:0.65rem 0.85rem;border-radius:8px;color:rgba(255,255,255,0.5);font-size:0.85rem;background:none;border:none;width:100%;transition:all 0.15s;cursor:pointer}
+.btn-logout:hover{color:#FF8080;background:rgba(255,80,80,0.08)}
+
+/* ─ MAIN ─────────────────────────────────────────────────────────────────── */
+.main-content{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 1.5rem;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-left h3{font-size:1.05rem;font-weight:700;color:var(--forest)}
+.topbar-left p{font-size:0.78rem;color:var(--muted)}
+.topbar-right{display:flex;align-items:center;gap:1rem}
+.topbar-time{font-size:0.82rem;color:var(--muted);font-weight:500;font-variant-numeric:tabular-nums}
+.menu-toggle{display:none;background:none;border:none;font-size:1.4rem;color:var(--forest);cursor:pointer}
+.page-content{padding:1.75rem;flex:1}
+.page{display:none}.page.active{display:block}
+
+/* ─ CARDS & SHARED ───────────────────────────────────────────────────────── */
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-header h3{font-size:0.92rem;font-weight:700;color:var(--forest)}
+.card-action{font-size:0.78rem;color:var(--leaf);font-weight:600;cursor:pointer;background:none;border:none}
+.card-body{padding:1.25rem}
+.page-title{margin-bottom:1.25rem}
+.page-title h2{font-size:1.25rem;font-weight:800;color:var(--forest)}
+.page-title p{font-size:0.83rem;color:var(--muted);margin-top:0.2rem}
+.breadcrumb{font-size:0.75rem;color:var(--muted);margin-bottom:0.3rem}
+.breadcrumb span{color:var(--leaf);font-weight:600}
+.alert{padding:0.8rem 1rem;border-radius:8px;font-size:0.87rem;margin-bottom:1rem;display:none}
+.alert.info{background:#E3F2FD;color:#1565C0;display:block}
+.alert.success{background:#E8F5E9;color:#1B5E20;display:block}
+.alert.error{background:#FFEBEE;color:var(--danger);display:block}
+
+/* ─ DASHBOARD ────────────────────────────────────────────────────────────── */
+.welcome-banner{
+  background:linear-gradient(135deg,var(--forest) 0%,var(--leaf) 60%,var(--sprout) 100%);
+  border-radius:var(--radius);padding:1.75rem 2rem;color:#fff;margin-bottom:1.5rem;
+  display:flex;align-items:center;justify-content:space-between;overflow:hidden;position:relative;
+}
+.welcome-banner::after{content:'🌾';position:absolute;right:1.5rem;font-size:5rem;opacity:0.15;pointer-events:none}
+.welcome-banner h2{font-size:1.45rem;font-weight:800;letter-spacing:-0.02em}
+.welcome-banner p{font-size:0.87rem;opacity:0.82;margin-top:0.3rem}
+.banner-date{font-size:0.78rem;opacity:0.6;margin-top:0.15rem}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin-bottom:1.5rem}
+.stat-card{background:#fff;border-radius:var(--radius);padding:1.25rem 1.5rem;box-shadow:var(--shadow);border-left:4px solid transparent;display:flex;align-items:center;gap:1rem}
+.stat-card.green{border-color:var(--leaf)}.stat-card.amber{border-color:var(--sun)}.stat-card.blue{border-color:var(--sky)}.stat-card.brown{border-color:#8B5E3C}
+.stat-icon{font-size:1.8rem}
+.stat-info .stat-val{font-size:1.55rem;font-weight:800;color:var(--forest);line-height:1}
+.stat-info .stat-label{font-size:0.75rem;color:var(--muted);margin-top:0.2rem;font-weight:500}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+
+/* ─ QUICK RECOMMENDER ────────────────────────────────────────────────────── */
+.quick-inputs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin-bottom:1rem}
+.mini-input-group label{font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:0.35rem}
+.mini-input-group input{width:100%;padding:0.55rem 0.7rem;border:1.5px solid var(--border);border-radius:7px;font-size:0.87rem;background:var(--cream);outline:none;transition:border-color 0.2s}
+.mini-input-group input:focus{border-color:var(--leaf);background:#fff}
+.result-chip{display:inline-flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg,var(--leaf),var(--sprout));color:#fff;padding:0.5rem 1.1rem;border-radius:20px;font-weight:700;font-size:0.95rem;margin-top:0.75rem}
+.history-item{display:flex;align-items:center;padding:0.65rem 0;border-bottom:1px solid var(--border);gap:0.75rem}
+.history-item:last-child{border-bottom:none}
+.h-icon{font-size:1.25rem}
+.h-info{flex:1}
+.h-info .h-crop{font-size:0.87rem;font-weight:600;color:var(--forest)}
+.h-info .h-meta{font-size:0.75rem;color:var(--muted)}
+.h-badge{padding:0.2rem 0.65rem;border-radius:12px;font-size:0.72rem;font-weight:700;background:var(--straw);color:#5C3A00}
+
+/* ─ RECOMMENDER PAGE ─────────────────────────────────────────────────────── */
+.recommender-layout{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.input-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:1.75rem}
+.input-card h2{font-size:1.1rem;font-weight:800;color:var(--forest);margin-bottom:0.3rem}
+.input-card p{font-size:0.83rem;color:var(--muted);margin-bottom:1.5rem}
+.slider-group{margin-bottom:1.25rem}
+.slider-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem}
+.slider-label span{font-size:0.82rem;font-weight:600;color:var(--forest);text-transform:uppercase;letter-spacing:0.04em}
+.slider-value{font-size:1.05rem;font-weight:800;color:var(--leaf);background:var(--page-bg);padding:0.15rem 0.6rem;border-radius:6px;min-width:55px;text-align:center}
+.range-input{width:100%;height:6px;-webkit-appearance:none;appearance:none;background:var(--mist);border-radius:3px;outline:none;cursor:pointer}
+.range-input::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--leaf);box-shadow:0 2px 6px rgba(46,125,69,0.4);cursor:pointer;transition:transform 0.15s}
+.range-input::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.range-hints{display:flex;justify-content:space-between;font-size:0.68rem;color:var(--muted);margin-top:0.25rem}
+.result-panel{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:1.75rem;display:flex;flex-direction:column}
+.result-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--muted)}
+.result-empty .empty-icon{font-size:3.5rem;margin-bottom:0.75rem;opacity:0.4}
+.result-empty p{font-size:0.87rem}
+.result-full{display:none}.result-full.show{display:block}
+.crop-display{text-align:center;padding:1.5rem 0}
+.crop-emoji{font-size:5rem;display:block;margin-bottom:0.5rem;animation:cropPop 0.4s cubic-bezier(0.175,0.885,0.32,1.275)}
+@keyframes cropPop{0%{transform:scale(0) rotate(-10deg);opacity:0}100%{transform:scale(1) rotate(0deg);opacity:1}}
+.crop-name{font-size:2rem;font-weight:900;color:var(--forest);letter-spacing:-0.04em}
+.crop-subtitle{font-size:0.87rem;color:var(--muted);margin-top:0.3rem}
+.condition-summary{background:var(--page-bg);border-radius:10px;padding:1rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin:1rem 0}
+.cond-item{text-align:center}
+.cond-val{font-size:1.25rem;font-weight:800;color:var(--forest)}
+.cond-label{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em}
+.crop-info-box{border-radius:10px;padding:1rem 1.1rem;margin-top:0.5rem;background:linear-gradient(135deg,rgba(46,125,69,0.08),rgba(82,169,106,0.05));border:1px solid rgba(46,125,69,0.15)}
+.crop-info-box h4{font-size:0.82rem;font-weight:700;color:var(--forest);margin-bottom:0.4rem;text-transform:uppercase;letter-spacing:0.05em}
+.crop-info-box p{font-size:0.83rem;color:var(--text);line-height:1.6}
+.btn-save-result{width:100%;padding:0.8rem;background:linear-gradient(135deg,var(--leaf),var(--sprout));border:none;border-radius:8px;color:#fff;font-size:0.9rem;font-weight:700;margin-top:1rem;transition:all 0.2s;cursor:pointer}
+.btn-save-result:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(46,125,69,0.3)}
+.btn-save-result:disabled{opacity:0.6;pointer-events:none}
+
+/* ─ CLIMATE LOG ──────────────────────────────────────────────────────────── */
+.log-form{max-width:560px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.log-input-group{margin-bottom:1rem}
+.log-input-group label{display:block;font-size:0.8rem;font-weight:600;color:var(--forest);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.4rem}
+.log-input-group input,.log-input-group select,.log-input-group textarea{width:100%;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.93rem;background:var(--cream);outline:none;transition:border-color 0.2s;color:var(--text)}
+.log-input-group input:focus,.log-input-group select:focus,.log-input-group textarea:focus{border-color:var(--leaf);box-shadow:0 0 0 3px rgba(46,125,69,0.1);background:#fff}
+.log-input-group textarea{resize:vertical;min-height:80px}
+.input-hint{font-size:0.72rem;color:var(--muted);margin-top:0.3rem}
+.log-actions{display:flex;gap:0.75rem;margin-top:0.5rem}
+.btn-secondary{padding:0.75rem 1.5rem;border:1.5px solid var(--border);background:#fff;border-radius:8px;font-size:0.9rem;font-weight:600;color:var(--muted);transition:all 0.2s;cursor:pointer}
+.btn-secondary:hover{border-color:var(--leaf);color:var(--leaf)}
+.btn-submit{padding:0.75rem 1.75rem;background:linear-gradient(135deg,var(--leaf),var(--sprout));border:none;border-radius:8px;color:#fff;font-size:0.9rem;font-weight:700;transition:all 0.2s;cursor:pointer}
+.btn-submit:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(46,125,69,0.3)}
+.btn-submit:disabled{opacity:0.6;pointer-events:none}
+
+/* ─ HISTORY PAGE ─────────────────────────────────────────────────────────── */
+.history-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.75rem}
+.history-header h2{font-size:1.1rem;font-weight:800;color:var(--forest)}
+.btn-refresh{padding:0.55rem 1.1rem;border:1.5px solid var(--border);background:#fff;border-radius:7px;font-size:0.82rem;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:0.4rem;transition:all 0.2s;cursor:pointer}
+.btn-refresh:hover{border-color:var(--leaf);color:var(--leaf)}
+.refresh-icon{display:inline-block;transition:transform 0.5s}
+.btn-refresh.spinning .refresh-icon{animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.history-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.history-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;border-top:4px solid var(--leaf);transition:transform 0.2s,box-shadow 0.2s;animation:slideUp 0.3s ease both}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.history-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.hc-top{padding:1.1rem 1.25rem 0.75rem;display:flex;align-items:center;justify-content:space-between}
+.hc-crop{font-size:1.05rem;font-weight:800;color:var(--forest);display:flex;align-items:center;gap:0.4rem}
+.hc-num{font-size:0.72rem;color:var(--muted);font-weight:500}
+.hc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid var(--border)}
+.hc-stat{padding:0.75rem;border-right:1px solid var(--border);text-align:center}
+.hc-stat:last-child{border-right:none}
+.hc-stat-val{font-size:1.1rem;font-weight:800;color:var(--forest)}
+.hc-stat-key{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-top:0.15rem}
+.hc-footer{padding:0.6rem 1.25rem;background:var(--page-bg);font-size:0.72rem;color:var(--muted);display:flex;align-items:center;gap:0.4rem}
+.history-empty{grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--muted)}
+.history-empty .empty-ico{font-size:3rem;opacity:0.3;margin-bottom:0.75rem}
+.history-empty p{font-size:0.87rem}
+.loading-overlay{display:flex;align-items:center;justify-content:center;padding:2rem;color:var(--muted);gap:0.5rem}
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--leaf);border-radius:50%;animation:spin 0.7s linear infinite}
+
+/* ─ ANALYTICS PAGE ───────────────────────────────────────────────────────── */
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+.chart-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem}
+.chart-card h3{font-size:0.92rem;font-weight:700;color:var(--forest);margin-bottom:1rem}
+.chart-wrap{position:relative;height:220px}
+.insight-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
+.insight-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:1.25rem 1.5rem;border-left:4px solid var(--leaf)}
+.insight-card h4{font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem}
+.insight-card .ins-val{font-size:1.4rem;font-weight:900;color:var(--forest)}
+.insight-card .ins-sub{font-size:0.75rem;color:var(--muted);margin-top:0.2rem}
+
+/* ─ PROFILE PAGE ─────────────────────────────────────────────────────────── */
+.profile-layout{display:grid;grid-template-columns:280px 1fr;gap:1.5rem}
+.profile-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.profile-cover{height:90px;background:linear-gradient(135deg,var(--forest),var(--leaf))}
+.profile-avatar-wrap{padding:0 1.5rem;margin-top:-30px;margin-bottom:0.75rem}
+.profile-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--sprout),var(--sun));display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:1.4rem;border:3px solid #fff;box-shadow:var(--shadow)}
+.profile-info{padding:0 1.5rem 1.5rem}
+.profile-info h3{font-size:1.1rem;font-weight:800;color:var(--forest)}
+.profile-info p{font-size:0.83rem;color:var(--muted);margin-top:0.2rem}
+.profile-meta{margin-top:1rem;display:flex;flex-direction:column;gap:0.5rem}
+.pm-item{display:flex;align-items:center;gap:0.5rem;font-size:0.83rem;color:var(--muted)}
+.pm-item strong{color:var(--text)}
+.profile-settings{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:1.75rem}
+.profile-settings h3{font-size:1rem;font-weight:800;color:var(--forest);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border)}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:0.85rem 0;border-bottom:1px solid var(--border)}
+.setting-row:last-child{border-bottom:none}
+.setting-info label{font-size:0.9rem;font-weight:600;color:var(--text);display:block}
+.setting-info p{font-size:0.78rem;color:var(--muted);margin-top:0.15rem}
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:24px;cursor:pointer;transition:background 0.2s}
+.toggle-slider::before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.toggle input:checked+.toggle-slider{background:var(--leaf)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(20px)}
+
+/* ─ GUIDE PAGE ───────────────────────────────────────────────────────────── */
+.guide-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.guide-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:1.5rem}
+.guide-card h3{font-size:1rem;font-weight:800;color:var(--forest);margin-bottom:0.3rem;display:flex;align-items:center;gap:0.5rem}
+.guide-card p{font-size:0.85rem;color:var(--muted);line-height:1.7;margin-bottom:0.75rem}
+.guide-full{grid-column:1/-1}
+.crop-table{width:100%;border-collapse:collapse;font-size:0.83rem;margin-top:0.5rem}
+.crop-table th{background:var(--page-bg);padding:0.5rem 0.75rem;text-align:left;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);border-bottom:2px solid var(--border)}
+.crop-table td{padding:0.6rem 0.75rem;border-bottom:1px solid var(--border);color:var(--text)}
+.crop-table tr:last-child td{border-bottom:none}
+.tag{display:inline-block;padding:0.15rem 0.6rem;border-radius:10px;font-size:0.72rem;font-weight:600}
+.tag-green{background:#E8F5E9;color:var(--leaf)}.tag-amber{background:#FFF8E1;color:#B8860B}.tag-blue{background:#E3F2FD;color:var(--sky)}
+.steps-list{list-style:none;counter-reset:step}
+.steps-list li{counter-increment:step;display:flex;gap:1rem;padding:0.85rem 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.steps-list li:last-child{border-bottom:none}
+.steps-list li::before{content:counter(step);width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--leaf),var(--sprout));color:#fff;font-size:0.8rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.steps-list li .step-text{font-size:0.87rem;color:var(--text);line-height:1.6}
+.steps-list li .step-text strong{color:var(--forest)}
+
+/* ─ TOAST ────────────────────────────────────────────────────────────────── */
+.save-toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--forest);color:#fff;padding:0.85rem 1.25rem;border-radius:10px;font-size:0.9rem;font-weight:600;box-shadow:var(--shadow-lg);transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);z-index:300;display:flex;align-items:center;gap:0.5rem}
+.save-toast.show{transform:translateY(0);opacity:1}
+.save-toast.error-toast{background:var(--danger)}
+
+/* ─ RESPONSIVE ───────────────────────────────────────────────────────────── */
+@media(max-width:900px){
+  .two-col,.recommender-layout,.guide-grid,.analytics-grid,.profile-layout{grid-template-columns:1fr}
+  .guide-full{grid-column:1}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
+  .sidebar-overlay.open{display:block}.main-content{margin-left:0}.menu-toggle{display:block}
+  .stats-grid{grid-template-columns:1fr 1fr}.quick-inputs{grid-template-columns:1fr 1fr}
+  .form-row{grid-template-columns:1fr}.page-content{padding:1rem}
+  .land-nav-links a:not(.btn-nav-cta):not(:last-child){display:none}
+  .hero h1{font-size:2rem}.hero-stats{gap:2rem}
+  .features-grid{grid-template-columns:1fr}.crops-grid{grid-template-columns:1fr 1fr}
+  .steps-row{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr}.quick-inputs{grid-template-columns:1fr}
+  .crops-grid{grid-template-columns:1fr}.steps-row{grid-template-columns:1fr}
+  .hero-stats{flex-direction:column;gap:1.25rem}
+}
+</style>
 </head>
+<body>
 
-<body class="d-flex flex-column min-vh-100">
+<!-- ════════════════════════════════════════════════════════════════════════════
+     LANDING PAGE
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="landing">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="#">
-                <i class="bi bi-tree-fill me-2"></i>CropClimate AI
-            </a>
+  <!-- NAV -->
+  <nav class="land-nav">
+    <div class="logo"><span>🌿</span>CropSense</div>
+    <div class="land-nav-links">
+      <a href="#features">Features</a>
+      <a href="#how">How It Works</a>
+      <a href="#crops">Crops</a>
+      <a onclick="showAuth()" style="cursor:pointer">Sign In</a>
+      <a class="btn-nav-cta" onclick="showAuth('register')" style="cursor:pointer">Get Started Free</a>
+    </div>
+  </nav>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-float">🌾</div>
+    <div class="hero-float">🌽</div>
+    <div class="hero-float">🌱</div>
+    <div class="hero-float">💧</div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">🌍 Built for Nigerian Farmers & Agronomists</div>
+      <h1>Know Exactly <em>What to Grow</em><br/>Before You Plant</h1>
+      <p>CropSense analyses your field's temperature, humidity, and soil pH to recommend the right crop and log your climate data — all in one intelligent platform.</p>
+      <div class="hero-btns">
+        <button class="btn-hero-primary" onclick="showAuth('register')">🌱 Start Free Today</button>
+        <a class="btn-hero-secondary" href="#how">▶ See How It Works</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="val">3</div><div class="lbl">Crops Supported</div></div>
+        <div class="hero-stat"><div class="val">3</div><div class="lbl">Key Inputs Analysed</div></div>
+        <div class="hero-stat"><div class="val">100%</div><div class="lbl">Free to Use</div></div>
+        <div class="hero-stat"><div class="val">∞</div><div class="lbl">Readings Logged</div></div>
+      </div>
+    </div>
+  </section>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#features">Features</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
-                        <a class="btn btn-outline-light me-2" href="login.html">Login</a>
-                        <a class="btn btn-warning fw-bold text-dark" href="register.html">Sign Up</a>
-                    </li>
-                </ul>
-            </div>
+  <!-- FEATURES -->
+  <section id="features" style="padding:5rem 5%;max-width:1200px;margin:0 auto">
+    <div class="land-section-header">
+      <div class="section-eyebrow">What CropSense Offers</div>
+      <h2>Everything You Need in One Platform</h2>
+      <p>From instant crop recommendations to long-term climate tracking, CropSense gives your farm a data advantage.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🌡️</div>
+        <h3>Instant Crop Recommendation</h3>
+        <p>Enter your current temperature, humidity, and soil pH — and get an instant, evidence-based crop recommendation in seconds. No guesswork.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>Climate Data Logging</h3>
+        <p>Record detailed field readings including rainfall, location, crop notes, and observations. Build a searchable history of your farm's conditions.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Analytics & Trends</h3>
+        <p>Visualise your historical climate data with interactive charts. Identify patterns in temperature and humidity across your readings over time.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>Secure Accounts</h3>
+        <p>Your data is stored safely with password hashing and per-user access. Sign in from any device and your readings are always there.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Works on Any Device</h3>
+        <p>CropSense is fully responsive. Use it in the field on your phone, at the office on a tablet, or at your desk on a computer.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📖</div>
+        <h3>Built-In Crop Guide</h3>
+        <p>Access reference tables for optimal temperature, humidity, and pH ranges across common crops — right inside the app, no internet search needed.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="how-section">
+    <div class="how-inner">
+      <div class="land-section-header">
+        <div class="section-eyebrow">Simple Process</div>
+        <h2>From Field Reading to Crop Decision in Minutes</h2>
+        <p>CropSense turns raw climate measurements into clear, actionable planting guidance.</p>
+      </div>
+      <div class="steps-row">
+        <div class="how-step"><div class="step-num">1</div><h3>Create Your Account</h3><p>Register free in under a minute. Your data is tied to your account and accessible anywhere.</p></div>
+        <div class="how-step"><div class="step-num">2</div><h3>Measure Your Field</h3><p>Take readings of air temperature, relative humidity, and soil pH using your field instruments.</p></div>
+        <div class="how-step"><div class="step-num">3</div><h3>Enter Your Data</h3><p>Adjust the sliders or type your values into the Crop Recommender tool.</p></div>
+        <div class="how-step"><div class="step-num">4</div><h3>Get Your Recommendation</h3><p>CropSense instantly analyses the conditions and tells you the best crop to plant.</p></div>
+        <div class="how-step"><div class="step-num">5</div><h3>Save & Track</h3><p>Save each reading to build a history of your field's conditions. Review analytics over time.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CROP SHOWCASE -->
+  <section id="crops" class="crops-section">
+    <div class="crops-inner">
+      <div class="land-section-header">
+        <div class="section-eyebrow">Supported Crops</div>
+        <h2>Crops CropSense Can Recommend</h2>
+        <p>The recommendation engine is calibrated around the most common staple crops for the Nigerian and West African farming context.</p>
+      </div>
+      <div class="crops-grid">
+        <div class="crop-card"><span class="cce">🌾</span><h3>Rice</h3><div class="cr">Temp: 20–35°C · Humidity: &gt;60% · pH: 5.5–6.5</div><span class="crop-tag ct-wet">Wet & Warm</span></div>
+        <div class="crop-card"><span class="cce">🌽</span><h3>Maize</h3><div class="cr">Temp: 25–35°C · Humidity: 30–60% · pH: 5.8–7.0</div><span class="crop-tag ct-hot">Hot & Dry</span></div>
+        <div class="crop-card"><span class="cce">🌾</span><h3>Wheat</h3><div class="cr">Temp: 12–25°C · Humidity: 40–65% · pH: 6.0–7.5</div><span class="crop-tag ct-cool">Cool Climate</span></div>
+        <div class="crop-card"><span class="cce">🥜</span><h3>Groundnut</h3><div class="cr">Temp: 25–30°C · Humidity: 30–50% · pH: 5.5–7.0</div><span class="crop-tag ct-warm">Warm & Sandy</span></div>
+        <div class="crop-card"><span class="cce">🫘</span><h3>Cowpea</h3><div class="cr">Temp: 25–35°C · Humidity: 25–55% · pH: 6.0–7.5</div><span class="crop-tag ct-hot">Heat Tolerant</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <h2>Ready to Make Smarter Planting Decisions?</h2>
+      <p>Join CropSense today — it's completely free. Start logging your field data and getting instant crop recommendations in minutes.</p>
+      <button class="btn-cta-big" onclick="showAuth('register')">🌱 Create Free Account</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="land-footer">
+    <div class="logo"><span>🌿</span> CropSense</div>
+    <p>© 2025 CropSense · Crop & Climate Intelligence Platform · Built on Node.js + MongoDB</p>
+  </footer>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════════
+     AUTH SCREEN
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-header">
+      <span class="auth-logo">🌾</span>
+      <h1>CropSense</h1>
+      <p>Crop & Climate Intelligence Platform</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
+    </div>
+    <div class="auth-body">
+      <div class="auth-panel active" id="panel-login">
+        <div class="form-group"><label>Email Address</label><input type="email" id="login-email" placeholder="you@example.com"/></div>
+        <div class="form-group"><label>Password</label><input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')handleLogin()"/></div>
+        <button class="btn-primary" id="btn-login" onclick="handleLogin()">Sign In</button>
+        <div class="auth-msg" id="login-msg"></div>
+        <div class="back-to-land"><a onclick="showLanding()">← Back to homepage</a></div>
+      </div>
+      <div class="auth-panel" id="panel-register">
+        <div class="form-group"><label>Full Name</label><input type="text" id="reg-name" placeholder="Your name"/></div>
+        <div class="form-group"><label>Email Address</label><input type="email" id="reg-email" placeholder="you@example.com"/></div>
+        <div class="form-group"><label>Password <span style="font-weight:400;color:var(--muted)">(min. 6 characters)</span></label><input type="password" id="reg-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')handleRegister()"/></div>
+        <button class="btn-primary" id="btn-register" onclick="handleRegister()">Create Account</button>
+        <div class="auth-msg" id="register-msg"></div>
+        <div class="back-to-land"><a onclick="showLanding()">← Back to homepage</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════════
+     APP SHELL
+════════════════════════════════════════════════════════════════════════════ -->
+<div id="app-shell">
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="bi">🌿</div>
+      <h2>CropSense</h2>
+      <p>Climate Intelligence</p>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sb-avatar">U</div>
+      <div class="user-info">
+        <div class="user-name" id="sb-name">Farmer</div>
+        <div class="user-role">Agronomist</div>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Main</div>
+      <button class="nav-item active" data-page="dashboard" onclick="goTo('dashboard',this)"><span class="nav-icon">🏠</span> Dashboard</button>
+      <button class="nav-item" data-page="recommender" onclick="goTo('recommender',this)"><span class="nav-icon">🌱</span> Crop Recommender</button>
+      <button class="nav-item" data-page="climate-log" onclick="goTo('climate-log',this)"><span class="nav-icon">📋</span> Log Climate Data</button>
+      <button class="nav-item" data-page="history" onclick="goTo('history',this)"><span class="nav-icon">📊</span> History <span class="nav-badge" id="history-badge">0</span></button>
+      <button class="nav-item" data-page="analytics" onclick="goTo('analytics',this)"><span class="nav-icon">📈</span> Analytics</button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Account</div>
+      <button class="nav-item" data-page="profile" onclick="goTo('profile',this)"><span class="nav-icon">👤</span> Profile & Settings</button>
+      <button class="nav-item" data-page="guide" onclick="goTo('guide',this)"><span class="nav-icon">📖</span> Crop Guide</button>
+    </div>
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="handleLogout()"><span>🚪</span> Sign Out</button>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:0.75rem">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="topbar-left">
+          <h3 id="topbar-title">Dashboard</h3>
+          <p id="topbar-sub">Welcome back</p>
         </div>
-    </nav>
+      </div>
+      <div class="topbar-right">
+        <span class="topbar-time" id="topbar-time"></span>
+      </div>
+    </div>
 
-    <main class="flex-grow-1">
+    <div class="page-content">
 
-        <section class="hero-section">
-            <div class="container">
-                <div class="row align-items-center flex-column-reverse flex-md-row">
-                    <div class="col-md-6 text-center text-md-start mt-4 mt-md-0">
-                        <span
-                            class="badge bg-success-subtle text-success mb-3 px-3 py-2 rounded-pill border border-success">
-                            Data-Driven Agriculture
-                        </span>
-                        <h1 class="display-4 fw-bolder text-dark lh-sm mb-3">
-                            Smart Crop Management Based on Climate
-                        </h1>
-                        <p class="lead text-muted mb-4">
-                            Remove the guesswork from farming. Get intelligent, data-backed recommendations for crop
-                            management using real-time temperature, rainfall, and humidity metrics.
-                        </p>
-                        <div class="d-flex gap-2 justify-content-center justify-content-md-start">
-                            <a href="register.html" class="btn btn-success btn-lg px-4 shadow-sm">
-                                Get Started <i class="bi bi-arrow-right ms-1"></i>
-                            </a>
-                            <a href="#features" class="btn btn-outline-secondary btn-lg px-4">
-                                Learn More
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <img src="https://images.unsplash.com/photo-1628352081506-83c43123ed6d?auto=format&fit=crop&w=800&q=80"
-                            alt="Lush green agricultural field" class="img-fluid hero-img">
-                    </div>
-                </div>
+      <!-- ── DASHBOARD ─────────────────────────────────────────────── -->
+      <div class="page active" id="page-dashboard">
+        <div class="welcome-banner">
+          <div>
+            <h2 id="dash-greeting">Good morning! 👋</h2>
+            <p>Here's your farm intelligence overview for today.</p>
+            <div class="banner-date" id="dash-date"></div>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card green"><span class="stat-icon">🌱</span><div class="stat-info"><div class="stat-val" id="stat-recs">0</div><div class="stat-label">Recommendations This Session</div></div></div>
+          <div class="stat-card amber"><span class="stat-icon">🌡️</span><div class="stat-info"><div class="stat-val" id="stat-temp">—</div><div class="stat-label">Last Temp Logged (°C)</div></div></div>
+          <div class="stat-card blue"><span class="stat-icon">💧</span><div class="stat-info"><div class="stat-val" id="stat-hum">—</div><div class="stat-label">Last Humidity (%)</div></div></div>
+          <div class="stat-card brown"><span class="stat-icon">🪱</span><div class="stat-info"><div class="stat-val" id="stat-ph">—</div><div class="stat-label">Last Soil pH</div></div></div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header"><h3>⚡ Quick Recommendation</h3><button class="card-action" onclick="goTo('recommender',document.querySelector('[data-page=recommender]'))">Full tool →</button></div>
+            <div class="card-body">
+              <div class="quick-inputs">
+                <div class="mini-input-group"><label>Temp (°C)</label><input type="number" id="q-temp" placeholder="25"/></div>
+                <div class="mini-input-group"><label>Humidity (%)</label><input type="number" id="q-hum" placeholder="60"/></div>
+                <div class="mini-input-group"><label>Soil pH</label><input type="number" id="q-ph" placeholder="6.5" step="0.1"/></div>
+              </div>
+              <button class="btn-primary" style="margin-top:0" onclick="quickRecommend()">Get Recommendation</button>
+              <div id="quick-result"></div>
             </div>
-        </section>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>🕒 Recent Entries</h3><button class="card-action" onclick="goTo('history',document.querySelector('[data-page=history]'))">View all →</button></div>
+            <div class="card-body" id="dash-history-body"><div class="loading-overlay"><div class="spinner"></div> Loading…</div></div>
+          </div>
+        </div>
+      </div>
 
-        <section id="features" class="container py-5 mt-4">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold">Why Choose CropClimate AI?</h2>
-                <p class="text-muted">Powerful tools designed to maximize your yield and protect your soil.</p>
+      <!-- ── RECOMMENDER ───────────────────────────────────────────── -->
+      <div class="page" id="page-recommender">
+        <div class="page-title">
+          <div class="breadcrumb">CropSense / <span>Crop Recommender</span></div>
+          <h2>Crop Recommendation Engine</h2>
+          <p>Adjust the sliders to match your current field conditions and get an instant crop recommendation.</p>
+        </div>
+        <div class="recommender-layout">
+          <div class="input-card">
+            <h2>Environmental Conditions</h2>
+            <p>Set your field's current temperature, humidity, and soil pH below.</p>
+            <div class="slider-group">
+              <div class="slider-label"><span>🌡️ Temperature</span><span class="slider-value" id="sv-temp">25°C</span></div>
+              <input type="range" class="range-input" id="sl-temp" min="0" max="50" value="25" oninput="updateSlider('temp',this.value)"/>
+              <div class="range-hints"><span>0°C — Cold</span><span>50°C — Hot</span></div>
             </div>
-
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card feature-card h-100 p-3">
-                        <div class="card-body text-center">
-                            <div class="icon-circle">
-                                <i class="bi bi-thermometer-sun"></i>
-                            </div>
-                            <h4 class="fw-bold h5">Climate Analysis</h4>
-                            <p class="text-muted mb-0">
-                                Continuously monitor and analyze granular environmental conditions affecting your
-                                specific crop growth cycle.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card feature-card h-100 p-3">
-                        <div class="card-body text-center">
-                            <div class="icon-circle">
-                                <i class="bi bi-droplet-fill"></i>
-                            </div>
-                            <h4 class="fw-bold h5">Crop Recommendation</h4>
-                            <p class="text-muted mb-0">
-                                Input your soil type and weather data to let our system suggest the most profitable and
-                                suitable crops for your land.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card feature-card h-100 p-3">
-                        <div class="card-body text-center">
-                            <div class="icon-circle">
-                                <i class="bi bi-clipboard-data-fill"></i>
-                            </div>
-                            <h4 class="fw-bold h5">Management Tips</h4>
-                            <p class="text-muted mb-0">
-                                Receive actionable, practical advice and alerts tailored to your region to dramatically
-                                improve crop yield.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            <div class="slider-group">
+              <div class="slider-label"><span>💧 Humidity</span><span class="slider-value" id="sv-hum">60%</span></div>
+              <input type="range" class="range-input" id="sl-hum" min="0" max="100" value="60" oninput="updateSlider('hum',this.value)"/>
+              <div class="range-hints"><span>0% — Dry</span><span>100% — Saturated</span></div>
             </div>
-        </section>
-
-        <section id="predict" class="container py-5">
-            <div class="card shadow p-4 border-0">
-                <h3 class="fw-bold mb-4">Get Crop Recommendation</h3>
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <label class="form-label">Temperature (°C)</label>
-                        <input type="number" id="temp" class="form-control" placeholder="e.g. 25">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Humidity (%)</label>
-                        <input type="number" id="hum" class="form-control" placeholder="e.g. 60">
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Soil pH</label>
-                        <input type="number" id="ph" class="form-control" step="0.1" placeholder="e.g. 6.5">
-                    </div>
-                    <div class="col-12 mt-3">
-                        <button onclick="fetchRecommendation()" class="btn btn-success btn-lg">Get Recommendation</button>
-                    </div>
-                </div>
-                <div id="result-area" class="mt-4 p-3 bg-light rounded d-none">
-                    <h4 id="crop-result" class="text-success fw-bold"></h4>
-                </div>
+            <div class="slider-group">
+              <div class="slider-label"><span>🪱 Soil pH</span><span class="slider-value" id="sv-ph">6.5</span></div>
+              <input type="range" class="range-input" id="sl-ph" min="0" max="14" value="6.5" step="0.1" oninput="updateSlider('ph',this.value)"/>
+              <div class="range-hints"><span>0 — Acidic</span><span>14 — Alkaline</span></div>
             </div>
-        </section>
+            <button class="btn-primary" id="btn-full-rec" onclick="fullRecommend()" style="margin-top:0.5rem">🌱 Get Crop Recommendation</button>
+          </div>
+          <div class="result-panel">
+            <h2 style="font-size:0.9rem;font-weight:700;color:var(--forest);margin-bottom:1rem">Recommendation Result</h2>
+            <div class="result-empty" id="rec-empty">
+              <div class="empty-icon">🔍</div>
+              <p>Set your conditions on the left and click<br><strong>Get Crop Recommendation</strong>.</p>
+            </div>
+            <div class="result-full" id="rec-full">
+              <div class="crop-display">
+                <span class="crop-emoji" id="rec-emoji">🌾</span>
+                <div class="crop-name" id="rec-crop-name">—</div>
+                <div class="crop-subtitle" id="rec-crop-sub">Best match for your conditions</div>
+              </div>
+              <div class="condition-summary">
+                <div class="cond-item"><div class="cond-val" id="rc-temp">—</div><div class="cond-label">Temp (°C)</div></div>
+                <div class="cond-item"><div class="cond-val" id="rc-hum">—</div><div class="cond-label">Humidity %</div></div>
+                <div class="cond-item"><div class="cond-val" id="rc-ph">—</div><div class="cond-label">Soil pH</div></div>
+              </div>
+              <div class="crop-info-box"><h4>About this crop</h4><p id="rec-info-text">—</p></div>
+              <button class="btn-save-result" id="btn-save-rec" onclick="saveRecommendation()">💾 Save This Reading to History</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <section id="history" class="container py-5">
-            <h3 class="fw-bold mb-4">Recent Climate Logs</h3>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Temperature</th>
-                        <th>Humidity</th>
-                        <th>pH</th>
-                    </tr>
-                </thead>
-                <tbody id="history-body">
-                </tbody>
+      <!-- ── CLIMATE LOG ──────────────────────────────────────────── -->
+      <div class="page" id="page-climate-log">
+        <div class="page-title">
+          <div class="breadcrumb">CropSense / <span>Log Climate Data</span></div>
+          <h2>Log Climate Reading</h2>
+          <p>Record a new climate observation to your history.</p>
+        </div>
+        <div class="log-form">
+          <div id="log-alert"></div>
+          <div class="form-row">
+            <div class="log-input-group"><label>Temperature (°C)</label><input type="number" id="log-temp" placeholder="e.g. 27"/><div class="input-hint">Ambient air temperature at field level</div></div>
+            <div class="log-input-group"><label>Humidity (%)</label><input type="number" id="log-hum" placeholder="e.g. 65" min="0" max="100"/><div class="input-hint">Relative humidity percentage</div></div>
+          </div>
+          <div class="form-row">
+            <div class="log-input-group"><label>Soil pH</label><input type="number" id="log-ph" placeholder="e.g. 6.5" step="0.1" min="0" max="14"/><div class="input-hint">Measured soil pH (0–14)</div></div>
+            <div class="log-input-group"><label>Rainfall (mm) <span style="font-weight:400;color:var(--muted)">optional</span></label><input type="number" id="log-rain" placeholder="e.g. 12" min="0"/><div class="input-hint">Rainfall in the last 24 hours</div></div>
+          </div>
+          <div class="form-row">
+            <div class="log-input-group"><label>Location / Field Name</label><input type="text" id="log-location" placeholder="e.g. North Field, Block A"/></div>
+            <div class="log-input-group"><label>Crop <span style="font-weight:400;color:var(--muted)">optional</span></label>
+              <select id="log-crop"><option value="">— Leave blank —</option><option>Rice</option><option>Maize</option><option>Wheat</option><option>Cassava</option><option>Yam</option><option>Sorghum</option><option>Cowpea</option><option>Groundnut</option><option>Tomato</option><option>Other</option></select>
+            </div>
+          </div>
+          <div class="log-input-group"><label>Notes <span style="font-weight:400;color:var(--muted)">optional</span></label><textarea id="log-notes" placeholder="Any additional observations about soil condition, weather patterns, crop status…"></textarea></div>
+          <div class="log-actions">
+            <button class="btn-secondary" onclick="clearLogForm()">Clear</button>
+            <button class="btn-submit" id="btn-log-submit" onclick="submitClimateLog()">💾 Save Reading</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── HISTORY ──────────────────────────────────────────────── -->
+      <div class="page" id="page-history">
+        <div class="history-header">
+          <div>
+            <div class="breadcrumb">CropSense / <span>History</span></div>
+            <h2>Climate Reading History</h2>
+          </div>
+          <button class="btn-refresh" id="btn-refresh-hist" onclick="loadHistory(true)"><span class="refresh-icon">↻</span> Refresh</button>
+        </div>
+        <div class="history-grid" id="history-grid"><div class="loading-overlay"><div class="spinner"></div> Loading…</div></div>
+      </div>
+
+      <!-- ── ANALYTICS ────────────────────────────────────────────── -->
+      <div class="page" id="page-analytics">
+        <div class="page-title">
+          <div class="breadcrumb">CropSense / <span>Analytics</span></div>
+          <h2>Climate Analytics</h2>
+          <p>Visual trends from your most recent field readings.</p>
+        </div>
+        <div id="analytics-no-data" class="alert info" style="display:none">No history data yet. Save some readings first to see charts here.</div>
+        <div id="analytics-content">
+          <div class="insight-row" style="margin-bottom:1.25rem">
+            <div class="insight-card"><h4>Avg Temperature</h4><div class="ins-val" id="ins-avg-temp">—</div><div class="ins-sub">across all readings</div></div>
+            <div class="insight-card" style="border-color:var(--sky)"><h4>Avg Humidity</h4><div class="ins-val" id="ins-avg-hum">—</div><div class="ins-sub">across all readings</div></div>
+            <div class="insight-card" style="border-color:var(--sun)"><h4>Avg Soil pH</h4><div class="ins-val" id="ins-avg-ph">—</div><div class="ins-sub">across all readings</div></div>
+            <div class="insight-card" style="border-color:#8B5E3C"><h4>Total Entries</h4><div class="ins-val" id="ins-total">—</div><div class="ins-sub">readings logged</div></div>
+          </div>
+          <div class="analytics-grid">
+            <div class="chart-card"><h3>🌡️ Temperature Trend</h3><div class="chart-wrap"><canvas id="chart-temp"></canvas></div></div>
+            <div class="chart-card"><h3>💧 Humidity Trend</h3><div class="chart-wrap"><canvas id="chart-hum"></canvas></div></div>
+            <div class="chart-card"><h3>🪱 Soil pH Trend</h3><div class="chart-wrap"><canvas id="chart-ph"></canvas></div></div>
+            <div class="chart-card"><h3>🌾 Crop Distribution</h3><div class="chart-wrap"><canvas id="chart-crops"></canvas></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROFILE ──────────────────────────────────────────────── -->
+      <div class="page" id="page-profile">
+        <div class="page-title">
+          <div class="breadcrumb">CropSense / <span>Profile & Settings</span></div>
+          <h2>Profile & Settings</h2>
+          <p>Manage your account preferences.</p>
+        </div>
+        <div class="profile-layout">
+          <div class="profile-card">
+            <div class="profile-cover"></div>
+            <div class="profile-avatar-wrap"><div class="profile-avatar" id="prof-avatar">U</div></div>
+            <div class="profile-info">
+              <h3 id="prof-name">—</h3>
+              <p id="prof-email">—</p>
+              <div class="profile-meta">
+                <div class="pm-item">📅 <span>Joined <strong id="prof-joined">—</strong></span></div>
+                <div class="pm-item">🌱 <span>Session recommendations: <strong id="prof-recs">0</strong></span></div>
+                <div class="pm-item">📋 <span>Readings logged: <strong id="prof-entries">0</strong></span></div>
+              </div>
+            </div>
+          </div>
+          <div class="profile-settings">
+            <h3>Preferences</h3>
+            <div class="setting-row">
+              <div class="setting-info"><label>Email Notifications</label><p>Receive alerts about your saved readings</p></div>
+              <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info"><label>Auto-save Recommendations</label><p>Automatically save every recommendation to history</p></div>
+              <label class="toggle"><input type="checkbox" id="pref-autosave"/><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info"><label>Compact Dashboard</label><p>Show fewer cards on the dashboard for a cleaner view</p></div>
+              <label class="toggle"><input type="checkbox"/><span class="toggle-slider"></span></label>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info"><label>Celsius Units</label><p>Display temperature in °C (toggle for °F)</p></div>
+              <label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label>
+            </div>
+            <h3 style="margin-top:1.5rem">Account</h3>
+            <div class="setting-row">
+              <div class="setting-info"><label>Sign Out</label><p>Log out of your CropSense account</p></div>
+              <button class="btn-secondary" onclick="handleLogout()" style="padding:0.5rem 1rem;font-size:0.82rem">Sign Out</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── CROP GUIDE ────────────────────────────────────────────── -->
+      <div class="page" id="page-guide">
+        <div class="page-title">
+          <div class="breadcrumb">CropSense / <span>Crop Guide</span></div>
+          <h2>Crop & Climate Reference Guide</h2>
+          <p>Optimal growing conditions and usage guidance for CropSense.</p>
+        </div>
+        <div class="guide-grid">
+          <div class="guide-card">
+            <h3>🌡️ Temperature Reference</h3>
+            <p>Each crop has a preferred temperature range for optimal germination and yield.</p>
+            <table class="crop-table">
+              <thead><tr><th>Crop</th><th>Optimal Temp</th><th>Category</th></tr></thead>
+              <tbody>
+                <tr><td>🌾 Rice</td><td>20–35°C</td><td><span class="tag tag-green">Warm</span></td></tr>
+                <tr><td>🌽 Maize</td><td>25–35°C</td><td><span class="tag tag-amber">Hot</span></td></tr>
+                <tr><td>🌾 Wheat</td><td>12–25°C</td><td><span class="tag tag-blue">Cool</span></td></tr>
+                <tr><td>🥜 Groundnut</td><td>25–30°C</td><td><span class="tag tag-amber">Warm-Hot</span></td></tr>
+                <tr><td>🫘 Cowpea</td><td>25–35°C</td><td><span class="tag tag-amber">Hot</span></td></tr>
+              </tbody>
             </table>
-            <button onclick="loadHistory()" class="btn btn-sm btn-outline-success">Refresh Logs</button>
-        </section>
-    </main>
-
-    <footer class="bg-success text-white py-4 mt-auto">
-        <div class="container text-center">
-            <div class="mb-2">
-                <i class="bi bi-tree-fill fs-4"></i>
-            </div>
-            <p class="mb-0 fw-light">
-                © 2026 Crop Climate Recommendation System. All rights reserved.
-            </p>
+          </div>
+          <div class="guide-card">
+            <h3>💧 Humidity & Soil pH</h3>
+            <p>Moisture and pH together determine nutrient availability and crop health.</p>
+            <table class="crop-table">
+              <thead><tr><th>Crop</th><th>Humidity</th><th>Ideal pH</th></tr></thead>
+              <tbody>
+                <tr><td>🌾 Rice</td><td>&gt;60%</td><td>5.5–6.5</td></tr>
+                <tr><td>🌽 Maize</td><td>30–60%</td><td>5.8–7.0</td></tr>
+                <tr><td>🌾 Wheat</td><td>40–65%</td><td>6.0–7.5</td></tr>
+                <tr><td>🥜 Groundnut</td><td>30–50%</td><td>5.5–7.0</td></tr>
+                <tr><td>🫘 Cowpea</td><td>25–55%</td><td>6.0–7.5</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="guide-card guide-full">
+            <h3>📖 How to Use CropSense</h3>
+            <ol class="steps-list">
+              <li><div class="step-text"><strong>Measure your conditions.</strong> Take readings of your field's temperature, humidity, and soil pH using your instruments before entering data.</div></li>
+              <li><div class="step-text"><strong>Use the Crop Recommender.</strong> Go to the Crop Recommender page and use the sliders to match your conditions. The system gives you an instant recommendation.</div></li>
+              <li><div class="step-text"><strong>Save your result.</strong> After getting a recommendation, click "Save This Reading" to log it to your history for future reference.</div></li>
+              <li><div class="step-text"><strong>Log raw data separately.</strong> Use the Log Climate Data page to record detailed readings — including rainfall, field name, and personal notes — even without needing a recommendation.</div></li>
+              <li><div class="step-text"><strong>Review your history.</strong> Go to History to see your saved readings displayed as cards with all measurements visible.</div></li>
+              <li><div class="step-text"><strong>Analyse trends.</strong> Visit the Analytics page for visual charts of your temperature, humidity, pH, and crop distribution over time.</div></li>
+            </ol>
+          </div>
+          <div class="guide-card">
+            <h3>⚙️ Recommendation Logic</h3>
+            <p>The backend engine uses these rules to determine your crop recommendation:</p>
+            <table class="crop-table">
+              <thead><tr><th>Condition</th><th>Result</th></tr></thead>
+              <tbody>
+                <tr><td>Temp &gt;20°C AND Humidity &gt;50% AND pH &gt;6.0</td><td>🌾 Rice</td></tr>
+                <tr><td>Temp &gt;25°C AND Humidity &lt;40%</td><td>🌽 Maize</td></tr>
+                <tr><td>All other conditions</td><td>🌾 Wheat</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="guide-card">
+            <h3>🌍 About CropSense</h3>
+            <p>CropSense is a climate-intelligent crop recommendation platform built to help Nigerian farmers and agronomists make data-driven planting decisions.</p>
+            <p>It combines real-time climate logging with backend analysis to deliver personalised recommendations based on temperature, humidity, and soil pH.</p>
+            <p style="margin-bottom:0">Stack: Node.js · Express · MongoDB Atlas · Vanilla JS</p>
+          </div>
         </div>
-    </footer>
+      </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </div><!-- /page-content -->
+  </div><!-- /main-content -->
+</div><!-- /app-shell -->
 
-    <script>
-        // 1. Function to get recommendation
-        async function fetchRecommendation() {
-            const data = {
-                temperature: parseFloat(document.getElementById('temp').value),
-                humidity: parseFloat(document.getElementById('hum').value),
-                soil_ph: parseFloat(document.getElementById('ph').value)
-            };
+<div class="save-toast" id="save-toast"></div>
 
-            // Save and get recommendation
-            await fetch('https://crop-climate-recommendation-system.onrender.com/save-data', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
+<!-- ════════════════════════════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════════════════════════════ -->
+<script>
+const API = 'https://crop-climate-node-backend.onrender.com';
+let currentUser = null, sessionRecs = 0, lastRecommendation = null;
+let historyData = [], charts = {};
+const cropEmojis = {Rice:'🌾',Maize:'🌽',Wheat:'🌾',Cassava:'🍠',Yam:'🥔',Sorghum:'🌾',Cowpea:'🫘',Groundnut:'🥜',Tomato:'🍅',Default:'🌱'};
+const cropInfo = {
+  Rice:'Rice thrives in warm, humid conditions with wet soil. It requires high moisture during growth and a slightly acidic to neutral pH. Best for irrigated lowland fields.',
+  Maize:'Maize grows best in hot, moderately dry conditions with well-drained soil. High yield potential per hectare. Ensure adequate nitrogen in the soil before planting.',
+  Wheat:'Wheat prefers cooler temperatures and moderate moisture. Versatile across many soil types. Ideal for elevated or temperate field conditions with neutral pH.'
+};
 
-            const response = await fetch('https://crop-climate-recommendation-system.onrender.com/recommend', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
+/* ─ INIT ──────────────────────────────────────────────────────────── */
+window.addEventListener('load',()=>{
+  const s = sessionStorage.getItem('cropsense_user');
+  if(s){currentUser=JSON.parse(s);enterApp();}
+  updateClock();setInterval(updateClock,1000);
+  updateSliderFills();
+});
+function updateClock(){
+  const el=document.getElementById('topbar-time');
+  if(el)el.textContent=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
 
-            const result = await response.json();
+/* ─ SCREENS ───────────────────────────────────────────────────────── */
+function showLanding(){
+  document.getElementById('landing').style.display='block';
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app-shell').classList.remove('visible');
+}
+function showAuth(tab='login'){
+  document.getElementById('landing').style.display='none';
+  document.getElementById('auth-screen').style.display='flex';
+  switchAuthTab(tab);
+}
+function switchAuthTab(tab){
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',tab==='login'?i===0:i===1));
+  document.getElementById('panel-login').classList.toggle('active',tab==='login');
+  document.getElementById('panel-register').classList.toggle('active',tab==='register');
+  ['login-msg','register-msg'].forEach(id=>{document.getElementById(id).className='auth-msg';});
+}
 
-            // Update UI
-            const resArea = document.getElementById('result-area');
-            resArea.classList.remove('d-none');
-            document.getElementById('crop-result').innerText = "Recommended Crop: " + result.crop;
+/* ─ AUTH ──────────────────────────────────────────────────────────── */
+async function handleLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const password=document.getElementById('login-password').value;
+  const btn=document.getElementById('btn-login');
+  if(!email||!password){showAuthMsg('login','error','Please enter your email and password.');return;}
+  btn.disabled=true;btn.textContent='Signing in…';
+  try{
+    const r=await fetch(`${API}/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+    const d=await r.json();
+    if(!r.ok){showAuthMsg('login','error',d.message||'Login failed.');return;}
+    currentUser={id:d.user_id,name:d.name||email.split('@')[0],email,joinedDate:new Date().toLocaleDateString('en-GB',{month:'short',year:'numeric'})};
+    sessionStorage.setItem('cropsense_user',JSON.stringify(currentUser));
+    enterApp();
+  }catch{showAuthMsg('login','error','Cannot reach server. Please try again.');}
+  finally{btn.disabled=false;btn.textContent='Sign In';}
+}
+async function handleRegister(){
+  const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const password=document.getElementById('reg-password').value;
+  const btn=document.getElementById('btn-register');
+  if(!name||!email||!password){showAuthMsg('register','error','All fields are required.');return;}
+  if(password.length<6){showAuthMsg('register','error','Password must be at least 6 characters.');return;}
+  btn.disabled=true;btn.textContent='Creating account…';
+  try{
+    const r=await fetch(`${API}/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password})});
+    const d=await r.json();
+    if(!r.ok){showAuthMsg('register','error',d.message||'Registration failed.');return;}
+    showAuthMsg('register','success','✅ Account created! You can now sign in.');
+    setTimeout(()=>switchAuthTab('login'),1800);
+  }catch{showAuthMsg('register','error','Cannot reach server. Please try again.');}
+  finally{btn.disabled=false;btn.textContent='Create Account';}
+}
+function showAuthMsg(panel,type,text){
+  const el=document.getElementById(`${panel}-msg`);el.textContent=text;el.className=`auth-msg ${type}`;
+}
+function handleLogout(){
+  sessionStorage.removeItem('cropsense_user');
+  currentUser=null;sessionRecs=0;lastRecommendation=null;historyData=[];
+  Object.values(charts).forEach(c=>{try{c.destroy();}catch{}});charts={};
+  document.getElementById('app-shell').classList.remove('visible');
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('landing').style.display='block';
+  window.scrollTo(0,0);
+}
 
-            // Refresh history table after saving new data
-            loadHistory();
-        }
+/* ─ ENTER APP ─────────────────────────────────────────────────────── */
+function enterApp(){
+  document.getElementById('landing').style.display='none';
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app-shell').classList.add('visible');
+  const initials=currentUser.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('sb-avatar').textContent=initials;
+  document.getElementById('sb-name').textContent=currentUser.name;
+  const hour=new Date().getHours();
+  const greet=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
+  document.getElementById('dash-greeting').textContent=`${greet}, ${currentUser.name}! 👋`;
+  document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('topbar-sub').textContent=`Welcome back, ${currentUser.name}`;
+  // profile
+  document.getElementById('prof-name').textContent=currentUser.name;
+  document.getElementById('prof-email').textContent=currentUser.email||'—';
+  document.getElementById('prof-avatar').textContent=currentUser.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('prof-joined').textContent=currentUser.joinedDate||'Today';
+  loadDashboard();
+}
 
-        // 2. Function to load history
-        async function loadHistory() {
-            const response = await fetch('https://crop-climate-recommendation-system.onrender.com/get-history');
-            const data = await response.json();
-            const tbody = document.getElementById('history-body');
-            tbody.innerHTML = '';
+/* ─ NAVIGATION ────────────────────────────────────────────────────── */
+function goTo(pageId,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(`page-${pageId}`).classList.add('active');
+  if(el)el.classList.add('active');
+  const titles={dashboard:['Dashboard','Farm intelligence overview'],recommender:['Crop Recommender','Get a crop recommendation for your conditions'],'climate-log':['Log Climate Data','Save a new climate reading'],history:['History','Browse your past readings'],analytics:['Analytics','Visual trends from your data'],profile:['Profile & Settings','Manage your account'],guide:['Crop Guide','Reference tables and usage guide']};
+  const[title,sub]=titles[pageId]||['CropSense',''];
+  document.getElementById('topbar-title').textContent=title;
+  document.getElementById('topbar-sub').textContent=sub;
+  if(pageId==='history')loadHistory();
+  if(pageId==='analytics')loadAnalytics();
+  if(pageId==='profile'){document.getElementById('prof-recs').textContent=sessionRecs;document.getElementById('prof-entries').textContent=historyData.length;}
+  closeSidebar();
+}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('open');}
 
-            data.forEach(item => {
-                tbody.innerHTML += `<tr>
-                    <td>${item.temperature}</td>
-                    <td>${item.humidity}</td>
-                    <td>${item.soil_ph}</td>
-                </tr>`;
-            });
-        }
+/* ─ SLIDERS ───────────────────────────────────────────────────────── */
+function updateSlider(w,v){
+  if(w==='temp')document.getElementById('sv-temp').textContent=`${v}°C`;
+  if(w==='hum')document.getElementById('sv-hum').textContent=`${v}%`;
+  if(w==='ph')document.getElementById('sv-ph').textContent=parseFloat(v).toFixed(1);
+  updateSliderFills();
+}
+function updateSliderFills(){
+  document.querySelectorAll('.range-input').forEach(s=>{
+    const pct=((s.value-s.min)/(s.max-s.min))*100;
+    s.style.background=`linear-gradient(to right,var(--leaf) ${pct}%,var(--mist) ${pct}%)`;
+  });
+}
 
-        // Automatically load history when page opens
-        window.onload = loadHistory;
-    </script>
+/* ─ QUICK RECOMMEND ───────────────────────────────────────────────── */
+async function quickRecommend(){
+  const temp=parseFloat(document.getElementById('q-temp').value);
+  const hum=parseFloat(document.getElementById('q-hum').value);
+  const ph=parseFloat(document.getElementById('q-ph').value);
+  const resEl=document.getElementById('quick-result');
+  if(isNaN(temp)||isNaN(hum)||isNaN(ph)){resEl.innerHTML='<div style="color:var(--danger);font-size:0.83rem;margin-top:0.5rem">⚠️ Please enter all three values.</div>';return;}
+  resEl.innerHTML='<div style="color:var(--muted);font-size:0.83rem;margin-top:0.75rem">⏳ Analysing…</div>';
+  try{
+    const r=await fetch(`${API}/recommend`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({temperature:temp,humidity:hum,soil_ph:ph})});
+    const d=await r.json();
+    const crop=d.crop||'Unknown';const emoji=cropEmojis[crop]||'🌱';
+    sessionRecs++;document.getElementById('stat-recs').textContent=sessionRecs;
+    resEl.innerHTML=`<div class="result-chip">${emoji} Recommended: <strong>${crop}</strong></div>`;
+    if(document.getElementById('pref-autosave')&&document.getElementById('pref-autosave').checked){
+      await fetch(`${API}/save-data`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({temperature:temp,humidity:hum,soil_ph:ph,crop,timestamp:new Date().toISOString(),source:'quick-dashboard'})});
+    }
+  }catch{resEl.innerHTML='<div style="color:var(--danger);font-size:0.83rem;margin-top:0.5rem">⚠️ Server error.</div>';}
+}
+
+/* ─ FULL RECOMMEND ────────────────────────────────────────────────── */
+async function fullRecommend(){
+  const temp=parseFloat(document.getElementById('sl-temp').value);
+  const hum=parseFloat(document.getElementById('sl-hum').value);
+  const ph=parseFloat(document.getElementById('sl-ph').value);
+  const btn=document.getElementById('btn-full-rec');
+  btn.disabled=true;btn.textContent='⏳ Analysing…';
+  try{
+    const r=await fetch(`${API}/recommend`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({temperature:temp,humidity:hum,soil_ph:ph})});
+    const d=await r.json();
+    const crop=d.crop||'Unknown';const emoji=cropEmojis[crop]||'🌱';
+    lastRecommendation={temperature:temp,humidity:hum,soil_ph:ph,crop,timestamp:new Date().toISOString()};
+    sessionRecs++;
+    document.getElementById('stat-recs').textContent=sessionRecs;
+    document.getElementById('stat-temp').textContent=temp;
+    document.getElementById('stat-hum').textContent=hum+'%';
+    document.getElementById('stat-ph').textContent=ph;
+    document.getElementById('rec-empty').style.display='none';
+    document.getElementById('rec-full').className='result-full show';
+    document.getElementById('rec-emoji').textContent=emoji;
+    document.getElementById('rec-crop-name').textContent=crop;
+    document.getElementById('rec-crop-sub').textContent=`Best match — Temp: ${temp}°C · Humidity: ${hum}% · pH: ${ph}`;
+    document.getElementById('rc-temp').textContent=temp+'°C';
+    document.getElementById('rc-hum').textContent=hum+'%';
+    document.getElementById('rc-ph').textContent=ph;
+    document.getElementById('rec-info-text').textContent=cropInfo[crop]||`${crop} is well suited to your current conditions. Monitor soil moisture and maintain optimal pH for best yields.`;
+    document.getElementById('btn-save-rec').disabled=false;
+    document.getElementById('btn-save-rec').textContent='💾 Save This Reading to History';
+    if(document.getElementById('pref-autosave')&&document.getElementById('pref-autosave').checked)await saveRecommendation(true);
+  }catch{showToast('⚠️ Could not reach server.',true);}
+  finally{btn.disabled=false;btn.textContent='🌱 Get Crop Recommendation';}
+}
+async function saveRecommendation(silent=false){
+  if(!lastRecommendation)return;
+  const btn=document.getElementById('btn-save-rec');
+  if(!silent){btn.disabled=true;btn.textContent='⏳ Saving…';}
+  try{
+    const r=await fetch(`${API}/save-data`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...lastRecommendation,user_id:currentUser?.id,source:'recommender'})});
+    if(r.ok){showToast('✅ Reading saved to history!');if(!silent){btn.textContent='✅ Saved!';}}
+    else{showToast('⚠️ Failed to save.',true);if(!silent){btn.disabled=false;btn.textContent='💾 Save This Reading';}}
+  }catch{showToast('⚠️ Server error.',true);if(!silent){btn.disabled=false;btn.textContent='💾 Save This Reading';}}
+}
+
+/* ─ CLIMATE LOG ───────────────────────────────────────────────────── */
+async function submitClimateLog(){
+  const temp=document.getElementById('log-temp').value;
+  const hum=document.getElementById('log-hum').value;
+  const ph=document.getElementById('log-ph').value;
+  const alertEl=document.getElementById('log-alert');
+  const btn=document.getElementById('btn-log-submit');
+  alertEl.className='';
+  if(!temp||!hum||!ph){alertEl.className='alert error';alertEl.textContent='⚠️ Temperature, Humidity, and Soil pH are required.';return;}
+  const payload={
+    temperature:parseFloat(temp),humidity:parseFloat(hum),soil_ph:parseFloat(ph),
+    rainfall_mm:document.getElementById('log-rain').value?parseFloat(document.getElementById('log-rain').value):null,
+    location:document.getElementById('log-location').value.trim()||null,
+    crop:document.getElementById('log-crop').value||null,
+    notes:document.getElementById('log-notes').value.trim()||null,
+    user_id:currentUser?.id,timestamp:new Date().toISOString(),source:'climate-log'
+  };
+  btn.disabled=true;btn.textContent='⏳ Saving…';
+  try{
+    const r=await fetch(`${API}/climate`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const d=await r.json();
+    if(r.ok){
+      showToast('✅ Climate reading saved!');
+      alertEl.className='alert success';alertEl.textContent='✅ Reading saved successfully! View it in History.';
+      document.getElementById('stat-temp').textContent=temp;
+      document.getElementById('stat-hum').textContent=hum+'%';
+      document.getElementById('stat-ph').textContent=ph;
+      clearLogForm();
+    }else{alertEl.className='alert error';alertEl.textContent=d.message||'⚠️ Failed to save.';}
+  }catch{alertEl.className='alert error';alertEl.textContent='⚠️ Server error.';}
+  finally{btn.disabled=false;btn.textContent='💾 Save Reading';}
+}
+function clearLogForm(){
+  ['log-temp','log-hum','log-ph','log-rain','log-location','log-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('log-crop').value='';
+  document.getElementById('log-alert').className='';
+}
+
+/* ─ HISTORY ───────────────────────────────────────────────────────── */
+async function loadHistory(showSpinner=false){
+  const grid=document.getElementById('history-grid');
+  const btn=document.getElementById('btn-refresh-hist');
+  if(showSpinner&&btn)btn.classList.add('spinning');
+  grid.innerHTML='<div class="loading-overlay"><div class="spinner"></div> Loading history…</div>';
+  try{
+    const r=await fetch(`${API}/get-history`);
+    if(!r.ok)throw new Error();
+    historyData=await r.json();
+    document.getElementById('history-badge').textContent=historyData.length;
+    renderHistory(historyData);
+    renderDashHistory(historyData);
+    if(historyData.length>0){
+      const l=historyData[0];
+      if(l.temperature!==undefined)document.getElementById('stat-temp').textContent=l.temperature;
+      if(l.humidity!==undefined)document.getElementById('stat-hum').textContent=l.humidity+'%';
+      if(l.soil_ph!==undefined)document.getElementById('stat-ph').textContent=l.soil_ph;
+    }
+  }catch{grid.innerHTML='<div class="history-empty"><div class="empty-ico">⚠️</div><p>Could not load history. Check your connection.</p></div>';}
+  finally{if(btn)btn.classList.remove('spinning');}
+}
+function renderHistory(data){
+  const grid=document.getElementById('history-grid');
+  if(!data||data.length===0){grid.innerHTML='<div class="history-empty"><div class="empty-ico">📋</div><p>No readings yet. Save your first reading to see it here.</p></div>';return;}
+  grid.innerHTML='';
+  data.forEach((e,i)=>{
+    const crop=e.crop||'Unknown';const emoji=cropEmojis[crop]||'🌱';
+    const date=e.timestamp?new Date(e.timestamp).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'Unknown time';
+    const loc=e.location?`📍 ${e.location}`:'📍 No location';
+    const card=document.createElement('div');
+    card.className='history-card';card.style.animationDelay=`${i*0.06}s`;
+    card.innerHTML=`<div class="hc-top"><div class="hc-crop">${emoji} ${crop}</div><div class="hc-num">#${i+1}</div></div><div class="hc-stats"><div class="hc-stat"><div class="hc-stat-val">${e.temperature??'—'}°</div><div class="hc-stat-key">Temp</div></div><div class="hc-stat"><div class="hc-stat-val">${e.humidity??'—'}%</div><div class="hc-stat-key">Humidity</div></div><div class="hc-stat"><div class="hc-stat-val">${e.soil_ph??'—'}</div><div class="hc-stat-key">pH</div></div></div><div class="hc-footer">🕒 ${date} &nbsp;|&nbsp; ${loc}</div>`;
+    grid.appendChild(card);
+  });
+}
+function renderDashHistory(data){
+  const body=document.getElementById('dash-history-body');
+  if(!data||data.length===0){body.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--muted);font-size:0.85rem">No readings yet.</div>';return;}
+  body.innerHTML=data.slice(0,4).map(e=>{
+    const crop=e.crop||'Unknown';const emoji=cropEmojis[crop]||'🌱';
+    return `<div class="history-item"><span class="h-icon">${emoji}</span><div class="h-info"><div class="h-crop">${crop}</div><div class="h-meta">T: ${e.temperature??'—'}°&nbsp; H: ${e.humidity??'—'}%&nbsp; pH: ${e.soil_ph??'—'}</div></div><span class="h-badge">Logged</span></div>`;
+  }).join('');
+}
+
+/* ─ ANALYTICS ─────────────────────────────────────────────────────── */
+async function loadAnalytics(){
+  if(!historyData||historyData.length===0)await loadHistory();
+  if(!historyData||historyData.length===0){
+    document.getElementById('analytics-no-data').style.display='block';
+    document.getElementById('analytics-content').style.display='none';return;
+  }
+  document.getElementById('analytics-no-data').style.display='none';
+  document.getElementById('analytics-content').style.display='block';
+  const valid=historyData.filter(e=>e.temperature!=null&&e.humidity!=null&&e.soil_ph!=null);
+  const labels=valid.map((_,i)=>`Entry ${valid.length-i}`).reverse();
+  const temps=valid.map(e=>e.temperature).reverse();
+  const hums=valid.map(e=>e.humidity).reverse();
+  const phs=valid.map(e=>e.soil_ph).reverse();
+  // insights
+  const avg=arr=>arr.length?+(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1):0;
+  document.getElementById('ins-avg-temp').textContent=avg(temps)+'°C';
+  document.getElementById('ins-avg-hum').textContent=avg(hums)+'%';
+  document.getElementById('ins-avg-ph').textContent=avg(phs);
+  document.getElementById('ins-total').textContent=historyData.length;
+  // crop distribution
+  const cropCounts={};historyData.forEach(e=>{const c=e.crop||'Unknown';cropCounts[c]=(cropCounts[c]||0)+1;});
+  const cfg={responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12}}}};
+  function mkChart(id,type,data,opts={}){
+    const el=document.getElementById(id);
+    if(charts[id])charts[id].destroy();
+    charts[id]=new Chart(el,{type,data,options:{...cfg,...opts}});
+  }
+  const lineOpts={scales:{y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:11}}},x:{grid:{display:false},ticks:{font:{size:10}}}}};
+  mkChart('chart-temp','line',{labels,datasets:[{label:'Temperature (°C)',data:temps,borderColor:'#E8A020',backgroundColor:'rgba(232,160,32,0.1)',tension:0.4,fill:true,pointRadius:4,pointBackgroundColor:'#E8A020'}]},lineOpts);
+  mkChart('chart-hum','line',{labels,datasets:[{label:'Humidity (%)',data:hums,borderColor:'#4A90C4',backgroundColor:'rgba(74,144,196,0.1)',tension:0.4,fill:true,pointRadius:4,pointBackgroundColor:'#4A90C4'}]},lineOpts);
+  mkChart('chart-ph','line',{labels,datasets:[{label:'Soil pH',data:phs,borderColor:'#2E7D45',backgroundColor:'rgba(46,125,69,0.1)',tension:0.4,fill:true,pointRadius:4,pointBackgroundColor:'#2E7D45'}]},lineOpts);
+  mkChart('chart-crops','doughnut',{labels:Object.keys(cropCounts),datasets:[{data:Object.values(cropCounts),backgroundColor:['#2E7D45','#E8A020','#4A90C4','#52A96A','#C0392B','#8B5E3C'],borderWidth:2,borderColor:'#fff'}]},{plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12}}}});
+}
+
+/* ─ DASHBOARD ─────────────────────────────────────────────────────── */
+async function loadDashboard(){
+  document.getElementById('stat-recs').textContent=sessionRecs;
+  await loadHistory();
+}
+
+/* ─ TOAST ─────────────────────────────────────────────────────────── */
+let toastTimer;
+function showToast(msg,isError=false){
+  const t=document.getElementById('save-toast');
+  t.textContent=msg;t.className='save-toast show'+(isError?' error-toast':'');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+</script>
 </body>
-
 </html>
