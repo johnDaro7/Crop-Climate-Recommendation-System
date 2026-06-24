@@ -27,7 +27,7 @@ app.use(express.json());
 
 // ── MONGODB CONNECTION ─────────────────────────────────────────────────────────
 const MONGO_URI = process.env.MONGO_URI ||
-  "mongodb+srv://JOHNDARO:exmartial2003@cluster0.5nwpjbf.mongodb.net/?appName=Cluster0&tls=true";
+  "mongodb+srv://JOHNDARO:exmartial2003@cluster0.5nwpjbf.mongodb.net/?appName=Cluster0";
 
 let db;
 
