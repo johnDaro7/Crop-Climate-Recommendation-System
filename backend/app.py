@@ -6,7 +6,13 @@ import certifi
 import os
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:56652", "https://johndaro7.github.io"])
+CORS(app,
+     origins=[
+         "https://johndaro7.github.io",
+         r"http://localhost:\d+",
+         r"http://127\.0\.0\.1:\d+",
+     ],
+     supports_credentials=True)
 
 client = MongoClient(
     'mongodb+srv://JOHNDARO:exmartial2003@cluster0.5nwpjbf.mongodb.net/?appName=Cluster0',
