@@ -14,7 +14,7 @@ app.use(cors({
     if (
       /^http:\/\/localhost:\d+$/.test(origin) ||
       /^http:\/\/127\.0\.0\.1:\d+$/.test(origin) ||
-      origin === "https://johndaro7.github.io"
+      origin === "https://johndaro7.github.io" || origin === "https://crop-climate-recommendation-system-a1z7.onrender.com"
     ) {
       return callback(null, true);
     }
