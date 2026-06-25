@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const { MongoClient } = require("mongodb");
 const bcrypt = require("bcryptjs");
 
@@ -12,31 +13,24 @@ const allowedOrigins = [
   "https://www.johndaro7.github.io",
 ];
 
+const corsOptions = {
+  origin: (origin, callback) => {
+    const normalizedOrigin = origin ? origin.replace(/\/$/, "") : null;
+
+    if (!normalizedOrigin || allowedOrigins.includes(normalizedOrigin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
+};
+
 // ── CORS ──────────────────────────────────────────────────────────────────────
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-    res.setHeader("Vary", "Origin");
-  } else if (!origin) {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-  }
-
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204);
-  }
-
-  next();
-});
-
-app.options("*", (req, res) => {
-  res.sendStatus(204);
-});
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 
