@@ -6,11 +6,11 @@ const bcrypt = require("bcryptjs");
 const app = express();
 const allowedOrigins = [
   "http://localhost:5500",
-  "http://127.0.0.1:5500",
+  "http://127.0.0.1:58654",
   "http://localhost:3000",
-  "http://localhost:5000",
   "https://johndaro7.github.io",
   "https://www.johndaro7.github.io",
+  "https://crop-climate-recommendation-system-a1z7.onrender.com",
 ];
 
 const corsOptions = {
