@@ -8,29 +8,29 @@ const app = express();
 // -------------------- CORS --------------------
 
 const allowedOrigins = [
-  "http://localhost:5500",
-  "http://127.0.0.1:5500",
-  "http://127.0.0.1:58654",
+  "http://localhost:5000",
+  "http://127.0.0.1:5000",
+  "http://localhost:52697",
+  "http://127.0.0.1:52697",
   "https://johndaro7.github.io",
   "https://crop-climate-recommendation-system-a1z7.onrender.com"
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) {
-        return callback(null, true);
-      }
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
+  optionsSuccessStatus: 200
+};
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("Not allowed by CORS"));
-    },
-    credentials: true
-  })
-);
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 

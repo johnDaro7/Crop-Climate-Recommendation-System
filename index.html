@@ -953,9 +953,7 @@ input,select,textarea{font-family:inherit}
      JAVASCRIPT
 ════════════════════════════════════════════════════════════════════════════ -->
 <script>
-const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-  ? 'http://localhost:5000'
-  : 'https://crop-climate-node-backend.onrender.com';
+const API = 'https://crop-climate-node-backend.onrender.com';
 let currentUser = null, sessionRecs = 0, lastRecommendation = null;
 let historyData = [], charts = {};
 const cropEmojis = {Rice:'🌾',Maize:'🌽',Wheat:'🌾',Cassava:'🍠',Yam:'🥔',Sorghum:'🌾',Cowpea:'🫘',Groundnut:'🥜',Tomato:'🍅',Default:'🌱'};
