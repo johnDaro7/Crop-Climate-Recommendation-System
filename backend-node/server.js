@@ -1,18 +1,42 @@
 const express = require("express");
-const cors = require("cors");
-const { MongoClient, ObjectId } = require("mongodb");
+const { MongoClient } = require("mongodb");
 const bcrypt = require("bcryptjs");
 
 const app = express();
+const allowedOrigins = [
+  "http://localhost:5500",
+  "http://127.0.0.1:5500",
+  "http://localhost:3000",
+  "http://localhost:5000",
+  "https://johndaro7.github.io",
+  "https://www.johndaro7.github.io",
+];
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
-app.use(cors({
-  origin: true,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
-app.options("*", cors());
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+  } else if (!origin) {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+  }
+
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+
+app.options("*", (req, res) => {
+  res.sendStatus(204);
+});
 
 app.use(express.json());
 
@@ -167,13 +191,22 @@ app.get("/get-history", async (req, res) => {
 // ── START SERVER ──────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 
-connectDB()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
-  })
-  .catch(err => {
-    console.error("❌ Failed to connect to MongoDB:", err.message);
-    process.exit(1);
+async function startServer() {
+  try {
+    await connectDB();
+    console.log("✅ MongoDB connection ready");
+  } catch (err) {
+    console.error("⚠️ MongoDB connection failed:", err.message);
+    console.log("🚀 Starting server without a database connection; auth and data routes will be unavailable until MongoDB is reachable.");
+  }
+
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
   });
+}
+
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = { app, startServer };
