@@ -7,27 +7,18 @@ const app = express();
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, curl, etc.)
-    if (!origin) return callback(null, true);
-    // Allow any localhost port and the GitHub Pages deployment
-    if (
-      /^http:\/\/localhost:\d+$/.test(origin) ||
-      /^http:\/\/127\.0\.0\.1:\d+$/.test(origin) ||
-      origin === "https://johndaro7.github.io" || origin === "https://crop-climate-recommendation-system-a1z7.onrender.com"
-    ) {
-      return callback(null, true);
-    }
-    callback(new Error("Not allowed by CORS"));
-  },
+  origin: true,
   credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
+app.options("*", cors());
 
 app.use(express.json());
 
 // ── MONGODB CONNECTION ─────────────────────────────────────────────────────────
 const MONGO_URI = process.env.MONGO_URI ||
-  "mongodb+srv://JOHNDARO:exmartial2003@cluster0.5nwpjbf.mongodb.net/?appName=Cluster0";
+  "mongodb+srv://JOHNDARO:exmartial2003@cluster0.5nwpjbf.mongodb.net/?appName=Cluster0&tls=true";
 
 let db;
 
