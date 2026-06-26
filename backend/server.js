@@ -2,31 +2,41 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
 const bcrypt = require("bcryptjs");
+require("dotenv").config();
 
 const app = express();
 
 // -------------------- CORS --------------------
 
 const allowedOrigins = [
-  "http://localhost:5000",
-  "http://127.0.0.1:5000",
-  "http://localhost:52697",
-  "http://127.0.0.1:52697",
   "https://johndaro7.github.io",
+  "https://www.johndaro7.github.io",
   "https://crop-climate-recommendation-system-a1z7.onrender.com"
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) {
       return callback(null, true);
     }
-    return callback(new Error("Not allowed by CORS"));
+
+    // Allow any localhost origin for development
+    if (origin.includes("localhost") || origin.includes("127.0.0.1")) {
+      return callback(null, true);
+    }
+
+    // Check production origins
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    callback(new Error("Not allowed by CORS"));
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"],
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions));
@@ -42,17 +52,22 @@ let db = null;
 
 async function connectDB() {
   if (!MONGO_URI) {
-    console.log("⚠️ MONGO_URI not found");
-    return;
+    console.error("❌ MONGO_URI not found in environment variables!");
+    console.error("Make sure your .env file contains: MONGO_URI=your_connection_string");
+    throw new Error("MONGO_URI is required");
   }
 
+  console.log("🔄 Connecting to MongoDB...");
   const client = new MongoClient(MONGO_URI);
 
-  await client.connect();
-
-  db = client.db("crop_recommendation_db");
-
-  console.log("✅ Connected to MongoDB");
+  try {
+    await client.connect();
+    db = client.db("crop_recommendation_db");
+    console.log("✅ Connected to MongoDB");
+  } catch (error) {
+    console.error("❌ Failed to connect to MongoDB:", error.message);
+    throw error;
+  }
 }
 
 // -------------------- ROUTES --------------------
@@ -204,4 +219,8 @@ async function startServer() {
   }
 }
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = { app };

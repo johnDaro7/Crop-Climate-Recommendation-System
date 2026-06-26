@@ -6,7 +6,10 @@
 
 document.addEventListener("DOMContentLoaded", function () {
     
-    const API_BASE_URL = "https://crop-climate-node-backend.onrender.com";
+  
+    const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? "http://localhost:5000"
+        : "https://crop-climate-node-backend.onrender.com";
 
     /* =========================================================================
        1. REGISTER FORM HANDLER
